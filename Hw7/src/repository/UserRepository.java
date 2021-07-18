@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class UserRepository implements BaseRepository{
+
     @Override
     public void showAll(Connection connection, Object object) throws SQLException {
 
