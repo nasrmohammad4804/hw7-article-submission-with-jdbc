@@ -120,7 +120,36 @@ public class UserRepository implements BaseRepository {
         }
         return user;
     }
+    public void changePasswordOfUser(Connection connection, User user, String newPassword) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("update user set password=? where id=?");
+        preparedStatement.setString(1, newPassword);
+        preparedStatement.setInt(2, user.getId());
+        preparedStatement.executeUpdate();
 
+        preparedStatement.close();
+        System.out.println("changing password is success !!!");
+    }
+
+    @Override
+    public void addDefault(Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into user(username,nationalcode,birthday,password) " +
+                "values (?,?,?,?)");
+
+        preparedStatement.setString(1,"mmn4804");
+        preparedStatement.setString(2,"1285672345");
+        preparedStatement.setDate(3,Date.valueOf("1367-08-11"));
+        preparedStatement.setString(4,"13804804");
+        preparedStatement.executeUpdate();
+
+        preparedStatement.setString(1,"ali1507");
+        preparedStatement.setString(2,"1273427234");
+        preparedStatement.setDate(3,Date.valueOf("1381-02-26"));
+        preparedStatement.setString(4,"1507ali");
+
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        System.out.println("default user added ....\n");
+    }
 }
 
 
