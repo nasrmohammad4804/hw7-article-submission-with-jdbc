@@ -21,6 +21,5 @@ public interface BaseRepository {
         // .........
     }
 
-    int  size() throws SQLException;
-
+    int size(Connection connection)throws SQLException;
 }

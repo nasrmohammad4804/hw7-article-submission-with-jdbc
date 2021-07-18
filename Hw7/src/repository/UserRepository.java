@@ -21,15 +21,15 @@ public class UserRepository implements BaseRepository{
     }
 
     @Override
-    public int size()throws SQLException {
-        /*int number = 0;
+    public int size(Connection connection)throws SQLException {
+        int number = 0;
         Statement statement = connection.createStatement();
 
         ResultSet resultSet = statement.executeQuery("select * from user ;");
         while (resultSet.next())
             number++;
 
-        return number;*/
-        return 0;
+        return number;
+
     }
 }
