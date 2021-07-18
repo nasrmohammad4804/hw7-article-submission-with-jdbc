@@ -16,6 +16,6 @@ public interface BaseRepository {
         // .........
     }
 
-    int  size();
+    int  size(Connection connection);
 
 }
