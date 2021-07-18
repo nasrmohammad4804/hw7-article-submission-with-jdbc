@@ -1,6 +1,9 @@
 package repository;
 
+import domain.Article;
 import domain.User;
+import mapper.ArticleMapper;
+import mapper.UserMapper;
 
 import java.sql.*;
 
@@ -48,6 +51,74 @@ public class UserRepository implements BaseRepository {
 
         preparedStatement.close();
 
+    }
+    private User checkForRegister(String userName, Connection connection) throws SQLException {
+        int counter = 0;
+
+        PreparedStatement preparedStatement = connection.prepareStatement("select  * from user where username =? ");
+
+        preparedStatement.setString(1, userName);
+
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+
+        User user = null;
+        while (resultSet.next()) {
+            counter++;
+
+            user = UserMapper.mapTOUserObject(resultSet);
+        }
+
+        preparedStatement.close();
+        if (counter == 0)
+            return null;
+
+        return user;
+    }
+    public User checkExistsUser(String userName, Connection connection) throws SQLException {
+
+        return checkForRegister(userName, connection);
+
+    }
+    public User checkExistsUser(String userName, String password, Connection connection) throws SQLException {
+        return checkForLogin(userName, password, connection);
+    }
+    public User checkForLogin(String userName, String password, Connection connection) throws SQLException {
+
+        int number = 0;
+
+        PreparedStatement preparedStatement = connection.prepareStatement("select  * from user where username =? and password=? ");
+
+        preparedStatement.setString(1, userName);
+        preparedStatement.setString(2, password);
+
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        User user = null;
+        while (resultSet.next()) {
+            number++;
+
+            user = UserMapper.mapTOUserObject(resultSet);
+        }
+        if (number == 0)
+            return null;
+
+        preparedStatement = connection.prepareStatement("select a.* from user as u join article as a on a.user_id=u.id where u.username=? and u.password=?");
+        preparedStatement.setString(1, userName);
+        preparedStatement.setString(2, password);
+
+        ResultSet resultSet1 = preparedStatement.executeQuery();
+
+        while (resultSet1.next()) {
+
+            Article article = ArticleMapper.mapToArticleObject(resultSet1);
+
+            user.addArticle(article);
+
+        }
+        return user;
     }
 
 }
