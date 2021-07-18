@@ -147,4 +147,26 @@ public class ArticleRepository implements BaseRepository{
 
 
     }
+    public void addArticle(Connection connection, domain.Article article, User user, int categoryId) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into article(title,brief,content, createDate,isPublished" +
+                ",lastUpdateDate,publishDate,user_id,category_id) values  (?,?,?,?,?,?,?,?,?)");
+
+        preparedStatement.setString(1, article.getTitle());
+        preparedStatement.setString(2, article.getBrief());
+        preparedStatement.setString(3, article.getContent());
+        preparedStatement.setDate(4, article.getCreateDate());
+        preparedStatement.setBoolean(5, article.isPublished());
+        preparedStatement.setDate(6, article.getLastUpdate());
+        preparedStatement.setDate(7, article.getPublishDate());
+        preparedStatement.setInt(8, user.getId());
+        preparedStatement.setInt(9, categoryId);
+
+
+        preparedStatement.executeUpdate();
+
+
+        System.out.println("article added .... ");
+        System.out.println("*".repeat(80));
+        preparedStatement.close();
+    }
 }
