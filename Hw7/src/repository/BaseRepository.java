@@ -13,11 +13,11 @@ public interface BaseRepository {
 
     void createTable(Connection connection)throws SQLException;
 
-    private void add(Connection connection, Object str) throws SQLException{
+    default void add(Connection connection, Object str) throws SQLException{
         //...........
     }
 
-    private void addDefault(Connection connection) throws SQLException {
+    default void addDefault(Connection connection) throws SQLException {
         // .........
     }
 
