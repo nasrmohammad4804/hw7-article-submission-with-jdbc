@@ -10,6 +10,7 @@ public class Article {
     private String content;
     private Date createDate;
     private boolean isPublished;
+    private boolean isFree;
     private Date lastUpdate;
     private Date publishDate;
     private Category category;
@@ -30,6 +31,14 @@ public class Article {
         this.brief = brief;
         this.content = content;
 
+    }
+
+    public boolean isFree() {
+        return isFree;
+    }
+
+    public void setFree(boolean free) {
+        isFree = free;
     }
 
     public void setCreateDate(Date createDate) {
@@ -106,6 +115,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", createDate=" + createDate +
                 ", isPublished=" + isPublished +
+                ", isFree="+isFree+
                 ", lastUpdate=" + lastUpdate +
                 ", publishDate=" + publishDate +
                 ", categoryId=" + category.getId() +
@@ -121,6 +131,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", createDate=" + createDate +
                 ", isPublished=" + isPublished +
+                ", isFree="+isFree+
                 ", lastUpdate=" + lastUpdate +
                 ", publishDate=" + publishDate +
                 ", categoryId=" + category.getId() +
