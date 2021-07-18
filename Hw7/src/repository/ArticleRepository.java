@@ -1,5 +1,6 @@
 package repository;
 
+import domain.Article;
 import domain.Category;
 import domain.User;
 import mapper.ArticleMapper;
@@ -25,6 +26,40 @@ public class ArticleRepository implements BaseRepository{
             System.out.println("*".repeat(80));
         }
     }
+
+    public void showAllFreeArticle(Connection connection) throws SQLException {
+
+        Statement statement=connection.createStatement();
+
+       ResultSet resultSet =  statement.executeQuery("select  * from article as a where isPublished=1 and isFree=1");
+
+       while (resultSet.next()){
+           Article article = ArticleMapper.mapToArticleObject(resultSet);
+           article.setCategory(new Category(resultSet.getInt("category_id"),CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"),
+                   connection.createStatement())));
+
+           article.print();
+           System.out.println("*".repeat(80));
+       }
+
+    }
+    public void showAllNonFreeArticle(Connection connection) throws SQLException{
+
+        Statement statement=connection.createStatement();
+
+        ResultSet result =  statement.executeQuery("select  * from article as a where isPublished=1 and isFree=0");
+
+        while ( result.next() ){
+
+            Article article = ArticleMapper.mapToArticleObject(result);
+            article.setCategory(new Category(result.getInt("category_id"),CategoryRepository.getTitleOfCategory(result.getInt("category_id"),
+                    connection.createStatement())));
+
+            article.print();
+            System.out.println("*".repeat(80));
+        }
+    }
+
 
     @Override
     public void createTable(Connection connection) throws SQLException {
