@@ -37,7 +37,7 @@ public class TagRepository implements BaseRepository{
     }
 
     @Override
-    public int size(Connection connection) throws SQLException {
+    public  int size(Connection connection) throws SQLException {
         int number = 0;
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from tag;");
@@ -59,5 +59,30 @@ public class TagRepository implements BaseRepository{
         preparedStatement.executeUpdate();
 
         preparedStatement.close();
+    }
+    public  int checkTagExists(Connection connection, String tagName) throws SQLException {
+
+        int id = -1;
+        PreparedStatement preparedStatement = connection.prepareStatement("" +
+                "select * from tag where title=? ");
+
+        preparedStatement.setString(1, tagName);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            if (resultSet.getString("title").equals(tagName)) {
+                id = resultSet.getInt("id");
+
+
+            }
+        }
+        preparedStatement.close();
+        if (id == -1) {
+            add( connection,tagName);
+            id = size(connection);
+
+        }
+
+        return id;
     }
 }
