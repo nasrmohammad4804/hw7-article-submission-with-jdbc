@@ -10,7 +10,20 @@ import java.util.Scanner;
 public class ArticleRepository implements BaseRepository{
     @Override
     public void showAll(Connection connection, Object object) throws SQLException {
+        Statement statement = connection.createStatement();
 
+        ResultSet resultSet = statement.executeQuery("select * from article where isPublished=1 ");
+
+        while (resultSet.next()) {
+
+            domain.Article article = ArticleMapper.mapToArticleObject(resultSet);
+            article.setCategory(new Category(resultSet.getInt("category_id"),
+                    CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"), connection.createStatement())));
+
+
+            article.print();
+            System.out.println("*".repeat(80));
+        }
     }
 
     @Override
