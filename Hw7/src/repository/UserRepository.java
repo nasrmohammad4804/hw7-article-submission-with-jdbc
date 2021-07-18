@@ -48,7 +48,7 @@ public class UserRepository implements BaseRepository {
         preparedStatement.setString(4, user.getNationalCode());
 
         preparedStatement.executeUpdate();
-        AccountRepository.createAccount(connection);
+        AccountRepository.addAccount(connection);
         connection.commit();
 
         connection.setAutoCommit(true);
@@ -144,7 +144,7 @@ public class UserRepository implements BaseRepository {
         preparedStatement.setDate(3,Date.valueOf("1367-08-11"));
         preparedStatement.setString(4,"13804804");
         preparedStatement.executeUpdate();
-        AccountRepository.createAccount(connection);
+        AccountRepository.addAccount(connection);
         connection.commit();
         connection.setAutoCommit(true);
 
@@ -155,12 +155,28 @@ public class UserRepository implements BaseRepository {
         preparedStatement.setString(4,"1507ali");
 
         preparedStatement.executeUpdate();
-        AccountRepository.createAccount(connection);
+        AccountRepository.addAccount(connection);
         connection.commit();
 
         connection.setAutoCommit(true);
         preparedStatement.close();
         System.out.println("default user added ....\n");
+    }
+    public boolean hasUserWitchUnBlockAccount(User user , Connection connection) throws SQLException {
+        PreparedStatement preparedStatement=connection.prepareStatement("select  * from user as u inner join account as a " +
+                " on a.id=? and a.isBlocked=?");
+
+        preparedStatement.setInt(1,user.getAccount().getId());
+        preparedStatement.setBoolean(2,false);
+
+        ResultSet resultSet =preparedStatement.executeQuery();
+        int counter=0;
+
+        while (resultSet.next())
+            counter++;
+
+         return counter==0 ? false : true;
+
     }
 }
 
