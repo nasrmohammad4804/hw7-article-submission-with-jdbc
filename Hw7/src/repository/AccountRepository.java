@@ -14,12 +14,14 @@ public class AccountRepository  {
 
         statement.close();
     }
-    public void addAccount(Connection connection) throws SQLException {
+    public static void addAccount(Connection connection) throws SQLException {
         PreparedStatement preparedStatement=connection.prepareStatement("insert into account(balance,isBlocked) values " +
                 "(?,?)");
         preparedStatement.setInt(1,0);
         preparedStatement.setBoolean(2,false);
     }
+
+
     public static void blockAccount(User user,Connection connection) throws SQLException {
         boolean bool=true;
         PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as block from user as u inner join account as a on a.id=u.account_id where u.id=?");
@@ -75,6 +77,28 @@ public class AccountRepository  {
             preparedStatement1.close();
         }
         else System.out.println("this account already unblock !!!");
+    }
+
+    public void chargeAccount(User user,int balance, Connection connection)throws SQLException{
+        PreparedStatement preparedStatement =connection.prepareStatement("select a.balance , a.id as accountId from user as u  inner join account as a on a.id=? ;");
+        preparedStatement.setInt(1,user.getAccount().getId());
+
+        ResultSet resultSet =preparedStatement.executeQuery();
+        resultSet.next();
+        int myBalance =resultSet.getInt("balance");
+        int accountId=resultSet.getInt("accountId");
+
+        myBalance+=balance;
+
+        PreparedStatement preparedStatement1=connection.prepareStatement("update account  set balance =? where id=? ");
+        preparedStatement1.setInt(1,myBalance);
+        preparedStatement1.setInt(2,accountId);
+        preparedStatement1.executeUpdate();
+
+        preparedStatement.close();
+        preparedStatement1.close();
+
+
     }
 
 
