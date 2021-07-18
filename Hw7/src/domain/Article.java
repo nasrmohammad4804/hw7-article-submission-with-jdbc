@@ -115,6 +115,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", createDate=" + createDate +
                 ", isPublished=" + isPublished +
+                ", isFree="+isFree+
                 ", lastUpdate=" + lastUpdate +
                 ", publishDate=" + publishDate +
                 ", categoryId=" + category.getId() +
@@ -130,6 +131,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", createDate=" + createDate +
                 ", isPublished=" + isPublished +
+                ", isFree="+isFree+
                 ", lastUpdate=" + lastUpdate +
                 ", publishDate=" + publishDate +
                 ", categoryId=" + category.getId() +
