@@ -19,7 +19,7 @@ public class UserRepository implements BaseRepository {
         Statement statement = connection.createStatement();
         statement.executeUpdate("create table if not exists user (id int primary key auto_increment," +
                 "username varchar (50) not null unique , nationalcode varchar (50) unique not null," +
-                "birthday date ,  password varchar (50) not null, acount_id int not null unique , foreign key acount_id references acount(id))");
+                "birthday date ,  password varchar (50) not null, account_id int not null unique , foreign key account_id references account(id))");
     }
 
     @Override
@@ -39,7 +39,7 @@ public class UserRepository implements BaseRepository {
         User user=(User) object;
         PreparedStatement preparedStatement = connection.prepareStatement("insert into user(username, nationalcode , birthday, password) values (?,?,?,?)");
 
-
+        connection.setAutoCommit(false);
         preparedStatement.setString(1, user.getUserName());
         preparedStatement.setString(2, user.getNationalCode());
 
@@ -48,6 +48,10 @@ public class UserRepository implements BaseRepository {
         preparedStatement.setString(4, user.getNationalCode());
 
         preparedStatement.executeUpdate();
+        AccountRepository.createAccount(connection);
+        connection.commit();
+
+        connection.setAutoCommit(true);
 
         preparedStatement.close();
 
@@ -134,19 +138,27 @@ public class UserRepository implements BaseRepository {
     public void addDefault(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("insert into user(username,nationalcode,birthday,password) " +
                 "values (?,?,?,?)");
-
+        connection.setAutoCommit(false);
         preparedStatement.setString(1,"mmn4804");
         preparedStatement.setString(2,"1285672345");
         preparedStatement.setDate(3,Date.valueOf("1367-08-11"));
         preparedStatement.setString(4,"13804804");
         preparedStatement.executeUpdate();
+        AccountRepository.createAccount(connection);
+        connection.commit();
+        connection.setAutoCommit(true);
 
+        connection.setAutoCommit(false);
         preparedStatement.setString(1,"ali1507");
         preparedStatement.setString(2,"1273427234");
         preparedStatement.setDate(3,Date.valueOf("1381-02-26"));
         preparedStatement.setString(4,"1507ali");
 
         preparedStatement.executeUpdate();
+        AccountRepository.createAccount(connection);
+        connection.commit();
+
+        connection.setAutoCommit(true);
         preparedStatement.close();
         System.out.println("default user added ....\n");
     }
