@@ -10,6 +10,7 @@ public class User {
     private String nationalCode;
     private Date birthDay;
     private String password;
+    private Account account;
     private List<Article> list;
 
     public User(int id, String userName, String nationalCode, Date birthDay, String password) {
@@ -29,12 +30,21 @@ public class User {
         this.password = password;
 
     }
-    public User(String userName,String nationalCode , Date birthDay){
+    public User(String userName,String nationalCode , Date birthDay,Account account){
         this.userName=userName;
         this.nationalCode=nationalCode;
         this.birthDay=birthDay;
+        this.account=account;
 
         setPassword(nationalCode);
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public void addArticle(Article article) {
