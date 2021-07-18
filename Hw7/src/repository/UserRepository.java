@@ -1,9 +1,8 @@
 package repository;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import domain.User;
+
+import java.sql.*;
 
 public class UserRepository implements BaseRepository {
 
@@ -32,6 +31,25 @@ public class UserRepository implements BaseRepository {
         return number;
 
     }
+    @Override
+    public void add(Connection connection, Object object) throws SQLException {
+        User user=(User) object;
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into user(username, nationalcode , birthday, password) values (?,?,?,?)");
+
+
+        preparedStatement.setString(1, user.getUserName());
+        preparedStatement.setString(2, user.getNationalCode());
+
+        preparedStatement.setDate(3, user.getBirthDay());
+
+        preparedStatement.setString(4, user.getNationalCode());
+
+        preparedStatement.executeUpdate();
+
+        preparedStatement.close();
+
+    }
+
 }
 
 
