@@ -5,6 +5,7 @@ import repository.AccountRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 public class UserAdmin {
 
@@ -15,5 +16,16 @@ public class UserAdmin {
         AccountRepository.unBlockAccount(user,connection);
     }
 
+    public boolean confirmToRegisterUser(){
+        Scanner scanner=new Scanner( System.in);
 
-}
+        System.out.println("userAdmin want you register this user\nif you enter yes if dont want enter no");
+        String result=scanner.nextLine();
+
+        return result.equals("yes");
+        }
+
+    }
+
+
+
