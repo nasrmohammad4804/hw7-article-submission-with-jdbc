@@ -9,7 +9,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-public class ArticleRepository implements BaseRepository{
+public class ArticleRepository implements BaseRepository {
 
     @Override
     public final <T> void showAll(Connection connection, T... value) throws SQLException {
@@ -22,7 +22,7 @@ public class ArticleRepository implements BaseRepository{
             domain.Article article = ArticleMapper.mapToArticleObject(resultSet);
             article.setCategory(new Category(resultSet.getInt("category_id"),
                     CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"), connection.createStatement())));
-            article.setFree(resultSet.getBoolean("isFree"));
+            article.setStateOfMoney(resultSet.getString("state_money"));
 
 
             article.print();
@@ -33,33 +33,34 @@ public class ArticleRepository implements BaseRepository{
 
     public void showAllFreeArticle(Connection connection) throws SQLException {
 
-        Statement statement=connection.createStatement();
+        Statement statement = connection.createStatement();
 
-       ResultSet resultSet =  statement.executeQuery("select  * from article  where isPublished=1 and isFree=1");
+        ResultSet resultSet = statement.executeQuery("select  * from article  where isPublished=1 and state_money='free'");
 
-       while (resultSet.next()){
-           Article article = ArticleMapper.mapToArticleObject(resultSet);
-           article.setCategory(new Category(resultSet.getInt("category_id"),CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"),
-                   connection.createStatement())));
-           article.setFree(resultSet.getBoolean("isFree"));
+        while (resultSet.next()) {
+            Article article = ArticleMapper.mapToArticleObject(resultSet);
+            article.setCategory(new Category(resultSet.getInt("category_id"), CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"),
+                    connection.createStatement())));
+            article.setStateOfMoney(resultSet.getString("state_money"));
 
-           article.print();
-           System.out.println("*".repeat(80));
-       }
+            article.print();
+            System.out.println("*".repeat(80));
+        }
 
     }
-    public void showAllNonFreeArticle(Connection connection) throws SQLException{
 
-        Statement statement=connection.createStatement();
+    public void showAllNonFreeArticle(Connection connection) throws SQLException {
 
-        ResultSet result =  statement.executeQuery("select  * from article as a where isPublished=1 and isFree=0 ");
+        Statement statement = connection.createStatement();
 
-        while ( result.next() ){
+        ResultSet result = statement.executeQuery("select  * from article as a where isPublished=1 and state_money='nonFree' ");
+
+        while (result.next()) {
 
             Article article = ArticleMapper.mapToArticleObject(result);
-            article.setCategory(new Category(result.getInt("category_id"),CategoryRepository.getTitleOfCategory(result.getInt("category_id"),
+            article.setCategory(new Category(result.getInt("category_id"), CategoryRepository.getTitleOfCategory(result.getInt("category_id"),
                     connection.createStatement())));
-            article.setFree(result.getBoolean("isFree"));
+            article.setStateOfMoney(result.getString("state_money"));
 
             article.print();
             System.out.println("*".repeat(80));
@@ -69,12 +70,12 @@ public class ArticleRepository implements BaseRepository{
 
     @Override
     public void createTable(Connection connection) throws SQLException {
-        Statement statement=connection.createStatement();
+        Statement statement = connection.createStatement();
 
         statement.executeUpdate("create table if not exists article " +
                 "(id int primary key auto_increment , title varchar(50) not null ," +
                 "brief varchar (50) not null , content text   , " +
-                "createDate date , isPublished tinyint(1)  , isFree tinyint(1) , " +
+                "createDate date , isPublished tinyint(1)  , state_money varchar(20) , " +
                 "lastUpdateDate date , publishDate date , " +
                 "user_id int , category_id int , " +
                 "foreign key  (user_id) references user(id) , " +
@@ -92,6 +93,7 @@ public class ArticleRepository implements BaseRepository{
 
         return number;
     }
+
     public void changeArticleOfUser(Connection connection, User user, int idOfArticle) throws SQLException {
 
         Scanner sc = new Scanner(System.in);
@@ -111,7 +113,7 @@ public class ArticleRepository implements BaseRepository{
                 String title = sc.nextLine();
                 preparedStatement = connection.prepareStatement("update article as a set a.title=?, lastUpdateDate=? where a.id=? and a.user_id=?");
                 preparedStatement.setString(1, title);
-                preparedStatement.setDate(2,Date.valueOf(LocalDate.now()));
+                preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
 
@@ -126,7 +128,7 @@ public class ArticleRepository implements BaseRepository{
                 String brief = sc.nextLine();
                 preparedStatement = connection.prepareStatement("update article as a set a.brief=? , lastUpdateDate=? where a.id=? and a.user_id=?");
                 preparedStatement.setString(1, brief);
-                preparedStatement.setDate(2,Date.valueOf(LocalDate.now()));
+                preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
 
@@ -141,12 +143,12 @@ public class ArticleRepository implements BaseRepository{
                 String content = sc.nextLine();
                 preparedStatement = connection.prepareStatement("update article as a set a.content=? ,lastUpdateDate=? where a.id=?  and a.user_id=?");
                 preparedStatement.setString(1, content);
-                preparedStatement.setDate(2,Date.valueOf(LocalDate.now()));
+                preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
-                System.out.println("content of row changed ...\n");
 
                 preparedStatement.executeUpdate();
+                System.out.println("content of row changed ...\n");
 
                 return;
 
@@ -162,7 +164,7 @@ public class ArticleRepository implements BaseRepository{
                 if (bool) {
                     preparedStatement = connection.prepareStatement("update article as a set isPublished=? , publishDate=?  where a.id=? and a.user_id=?");
                     preparedStatement.setBoolean(1, false);
-                    preparedStatement.setDate(2,null);
+                    preparedStatement.setDate(2, null);
                     preparedStatement.setInt(3, idOfArticle);
                     preparedStatement.setInt(4, user.getId());
 
@@ -172,44 +174,48 @@ public class ArticleRepository implements BaseRepository{
                 } else {
                     preparedStatement = connection.prepareStatement("update article as a set isPublished=?  , publishDate=? where a.id=? and a.user_id=?");
                     preparedStatement.setBoolean(1, true);
-                    preparedStatement.setDate(2,Date.valueOf(LocalDate.now()));
+                    preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
                     preparedStatement.setInt(3, idOfArticle);
                     preparedStatement.setInt(4, user.getId());
 
                     preparedStatement.executeUpdate();
 
-                    specifyTheStatusArticle(connection,idOfArticle,user);
+                    specifyTheStatusArticle(connection, idOfArticle, user);
                     System.out.println("filed of isPublished changed to true  ...\n");
 
                 }
 
-
         }
 
-
     }
-    private void specifyTheStatusArticle(Connection connection,int articleId, User user) throws SQLException{
-        Scanner scanner=new Scanner(System.in);
+
+    private void specifyTheStatusArticle(Connection connection, int articleId, User user) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("are you want article is free or noneFree if free enter free else enter noneFree ... ");
 
-        switch (scanner.nextLine()){
+        switch (scanner.nextLine()) {
             case "free" -> {
-                PreparedStatement preparedStatement=connection.prepareStatement("update article as a set isFree=? where a.id=? and a.user_id=? ");
-                preparedStatement.setBoolean(1,true);
-                preparedStatement.setInt(2,articleId);
-                preparedStatement.setInt(3,user.getId());
+                PreparedStatement preparedStatement = connection.prepareStatement("update article as a set state_money=? where a.id=? and a.user_id=? ");
+                preparedStatement.setString(1, "free");
+                preparedStatement.setInt(2, articleId);
+                preparedStatement.setInt(3, user.getId());
                 preparedStatement.executeUpdate();
 
                 preparedStatement.close();
             }
-            default -> {
-                System.out.println("not valid try again ");
-                specifyTheStatusArticle(connection,articleId,user);
+            case "nonFree" -> {
+                PreparedStatement preparedStatement = connection.prepareStatement("update article as a set state_money=? where a.id=? and a.user_id=? ");
+                preparedStatement.setString(1, "nonFree");
+                preparedStatement.setInt(2, articleId);
+                preparedStatement.setInt(3, user.getId());
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
             }
-
+            default -> System.out.println("not valid your input ... ");
 
         }
     }
+
     public boolean ExistsArticleId(Connection connection, int id, User user) throws SQLException {
 
         PreparedStatement preparedStatement = connection.prepareStatement("select * from article as a where a.id=? and a.user_id=? ");
@@ -228,11 +234,11 @@ public class ArticleRepository implements BaseRepository{
 
         return true;
 
-
     }
+
     public void addArticle(Connection connection, domain.Article article, User user, int categoryId) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("insert into article(title,brief,content, createDate,isPublished" +
-                ",lastUpdateDate,publishDate,user_id,category_id) values  (?,?,?,?,?,?,?,?,?)");
+                ",lastUpdateDate,publishDate,user_id,category_id,state_money) values  (?,?,?,?,?,?,?,?,?,?)");
 
         preparedStatement.setString(1, article.getTitle());
         preparedStatement.setString(2, article.getBrief());
@@ -243,6 +249,7 @@ public class ArticleRepository implements BaseRepository{
         preparedStatement.setTimestamp(7, article.getPublishDate());
         preparedStatement.setInt(8, user.getId());
         preparedStatement.setInt(9, categoryId);
+        preparedStatement.setString(10, article.getStateOfMoney());
 
 
         preparedStatement.executeUpdate();
