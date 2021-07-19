@@ -170,11 +170,10 @@ public class App {
             System.out.println("not exists username with this password .. may be wrong username or password try again ...\n");
             login();
         } else {
-            if (accountRepository.checkAccountBlockedUserForLogin(user, connection)){
+            if (accountRepository.checkAccountBlockedUserForLogin(user, connection)) {
                 changingPassword(user);
                 userPanel(user);
-            }
-            else {
+            } else {
                 System.out.println("account of user blocked you have not access to account ...\n");
                 menu();
             }
@@ -252,19 +251,20 @@ public class App {
                 "press #1 else press #2");
 
         switch (scanner.nextInt()) {
-            case 1:
+            case 1 -> {
                 System.out.println("enter new password");
                 scanner.nextLine();
                 String pass = scanner.nextLine();
                 userTable.changePasswordOfUser(connection, user, pass);
-                break;
+            }
 
-            case 2:
-                break;
+            case 2 -> menu();
 
-            default:
+            default -> {
                 System.out.println("your data not valid back to menu .. .");
                 menu();
+            }
+
         }
 
     }
@@ -299,7 +299,7 @@ public class App {
         articleRepository.addArticle(connection, article, user, result);
         article.setId(articleRepository.size(connection));
 
-        tempArticleTag.add( connection,article, result, tagTable);
+        tempArticleTag.add(connection, article, result, tagTable);
         connection.commit();
 
     }
