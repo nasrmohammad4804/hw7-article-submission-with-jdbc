@@ -133,7 +133,7 @@ public class AccountRepository  {
         while (resultSet.next())
             counter++;
 
-        return counter>0 ? false : true;
+        return counter>0 ? true : false;
     }
 
 
