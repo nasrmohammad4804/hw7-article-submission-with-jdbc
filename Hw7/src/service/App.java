@@ -315,5 +315,8 @@ public class App {
 
             } else return result;
         }
+        public void closeOfResource()throws SQLException{
+            connection.close();
+        }
     }
 
