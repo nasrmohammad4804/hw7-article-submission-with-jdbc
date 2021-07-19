@@ -5,7 +5,6 @@ import domain.User;
 import repository.*;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,8 @@ import java.util.Scanner;
 
 public class App {
     private static Connection connection;
-    private static Scanner scanner;
+    private static Scanner scannerForString;
+    private static  Scanner scannerForInteger;
 
     private static UserRepository userTable;
     private static CategoryRepository categoryTable;
@@ -23,7 +23,8 @@ public class App {
     private static AccountRepository accountRepository;
 
     public App() throws SQLException, ClassNotFoundException {
-        scanner = new Scanner(System.in);
+        scannerForString = new Scanner(System.in);
+        scannerForInteger=new Scanner(System.in);
 
         connection = DriverManager.getConnection("jdbc:mysql://localhost/hw7",
                 "root", "MohammadN@sr13804804");
@@ -71,8 +72,8 @@ public class App {
         System.out.println("enter 8 to charge of account for user !!!");
         System.out.println("enter 9 to exit the program");
 
-        int number = scanner.nextInt();
-        scanner.nextLine();
+        int number = scannerForInteger.nextInt();
+
         switch (number) {
             case 1 -> login();
 
@@ -133,18 +134,18 @@ public class App {
     public void chargeAccountOfUser() throws SQLException {
 
         System.out.println("enter your userName ...");
-        String userName = scanner.nextLine();
+        String userName = scannerForString.nextLine();
         User user = userTable.checkExistsUser(userName, connection);
         if (userTable.hasUserWitchUnBlockAccount(user, connection)) {
             System.out.println("enter how many balance to add your account ...\n");
-            int balance = scanner.nextInt();
+            int balance = scannerForInteger.nextInt();
             accountRepository.chargeAccount(user, balance, connection);
         } else System.out.println("this user not exists or blocked accounted -_-\n");
     }
 
     public void blockOfUser() throws SQLException {
         System.out.println("enter userName");
-        String userName = scanner.nextLine();
+        String userName = scannerForString.nextLine();
 
         User user = userTable.checkExistsUser(userName, connection);
 
@@ -153,7 +154,7 @@ public class App {
 
     public void unBlockOfUser() throws SQLException {
         System.out.println("enter userName");
-        String userName = scanner.nextLine();
+        String userName = scannerForString.nextLine();
 
         User user = userTable.checkExistsUser(userName, connection);
         UserAdmin.unBlockAccount(user, connection);
@@ -161,10 +162,10 @@ public class App {
 
     public void login() throws SQLException {
         System.out.println("enter username ##");
-        String userName = scanner.nextLine();
+        String userName = scannerForString.nextLine();
 
         System.out.println("enter password");
-        String password = scanner.nextLine();
+        String password = scannerForString.nextLine();
         User user = userTable.checkExistsUser(userName, password, connection);
 
         if (user == null) {
@@ -183,13 +184,13 @@ public class App {
     }
 
     public void register() throws SQLException {
-        Scanner sc = new Scanner(System.in);
+
         System.out.println("enter an username");
-        String userName = sc.nextLine();
+        String userName = scannerForString.nextLine();
         System.out.println("enter nationalCode .. ");
-        String nationalCode = sc.nextLine();
+        String nationalCode = scannerForString.nextLine();
         System.out.println("enter birthday");
-        Date birthday = Date.valueOf(sc.nextLine());
+        Date birthday = Date.valueOf(scannerForString.nextLine());
 
 
         User us = new User(userName, nationalCode, birthday);
@@ -212,13 +213,13 @@ public class App {
     }
 
     public void userPanel(User user) throws SQLException {
-        Scanner sc = new Scanner(System.in);
+
         System.out.println("1. showAllArticle");
         System.out.println("2. update of article");
         System.out.println("3. create new article");
         System.out.println("4. back to firstPage");
         System.out.println("------------------------------------------------");
-        switch (sc.nextInt()) {
+        switch (scannerForInteger.nextInt()) {
 
             case 1:
                 tempArticleTag.showAll(connection, user);
@@ -227,7 +228,7 @@ public class App {
 
             case 2:
                 System.out.println("enter id of article");
-                int id = sc.nextInt();
+                int id = scannerForInteger.nextInt();
                 if (articleRepository.ExistsArticleId(connection, id, user)) {
                     articleRepository.changeArticleOfUser(connection, user, id);
                     userPanel(user);
@@ -251,11 +252,11 @@ public class App {
         System.out.println("if you want changing password  " +
                 "press #1 else press #2");
 
-        switch (scanner.nextInt()) {
+        switch (scannerForInteger.nextInt()) {
             case 1 -> {
                 System.out.println("enter new password");
-                scanner.nextLine();
-                String pass = scanner.nextLine();
+
+                String pass = scannerForString.nextLine();
                 userTable.changePasswordOfUser(connection, user, pass);
             }
 
@@ -271,19 +272,19 @@ public class App {
     }
 
     public void createArticle(User user) throws SQLException {
-        Scanner sc = new Scanner(System.in); //TODO ---------------------------//
+        //TODO ---------------------------//
 
         int result = checkCategoryExists();
 
 
         System.out.println("enter a title for article ");
-        String title = sc.nextLine();
+        String title = scannerForString.nextLine();
 
         System.out.println("enter brief");
-        String brief = sc.nextLine();
+        String brief = scannerForString.nextLine();
 
         System.out.println("enter a content");
-        String content = sc.nextLine();
+        String content = scannerForString.nextLine();
 
         System.out.println("enter a create date");
         Timestamp createDate = Timestamp.valueOf(LocalDateTime.now());
@@ -291,6 +292,7 @@ public class App {
 
         Article article = new Article(title, brief, content);
         article.setCreateDate(createDate);
+        article.setStateOfMoney(" ");
         article.setPublished(false);
         article.setLastUpdate(null);
         article.setPublishDate(null);
@@ -306,10 +308,10 @@ public class App {
     }
 
     public int checkCategoryExists() throws SQLException {
-        Scanner str = new Scanner(System.in);
+
         categoryTable.showAll(connection, null);
         System.out.println("enter one category for your article");
-        String title = str.nextLine();
+        String title = scannerForString.nextLine();
 
         int result = 0;
         List<String> list = new LinkedList<>();
@@ -326,7 +328,7 @@ public class App {
         }
 
         if (!list.contains(title)) {
-            str.nextLine();
+
             categoryTable.add(connection, title);
             categoryTable.showAll(connection, null);
             return list.size() + 1;
