@@ -1,9 +1,11 @@
 package service;
 
+import domain.Account;
 import domain.User;
 import repository.*;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -151,11 +153,58 @@ public class App {
 
         }
     }
-    public void register(){
+    public void register() throws SQLException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("enter an username");
+        String userName = sc.nextLine();
+        System.out.println("enter nationalCode .. ");
+        String nationalCode = sc.nextLine();
+        System.out.println("enter birthday");
+        Date birthday = Date.valueOf(sc.nextLine());
+
+
+        User us = new User(userName, nationalCode, birthday);
+
+        if(userTable.checkExistsUser(us.getUserName(),connection)==null && UserAdmin.confirmToRegisterUser()){
+            userTable.add(connection,us);
+            us.setId(userTable.size(connection));
+            System.out.println("!! registered new user by username : " + userName + "\n");
+            changingPassword(us);
+            userPanel(us);
+        }
+        else if(userTable.checkExistsUser(us.getUserName(),connection)==null && !UserAdmin.confirmToRegisterUser())
+            System.out.println("user admin not allow to register");
+
+        else {
+            System.out.println("this user already exists in database back to menu ");
+            menu();
+
+        }
 
     }
 
     public void userPanel(User user){
+
+    }
+    private void changingPassword(User user) throws SQLException {
+        System.out.println("if you want changing password  " +
+                "press #1 else press #2");
+
+        switch (scanner.nextInt()) {
+            case 1:
+                System.out.println("enter new password");
+                scanner.nextLine();
+                String pass = scanner.nextLine();
+                userTable.changePasswordOfUser(connection, user, pass);
+                break;
+
+            case 2:
+                break;
+
+            default:
+                System.out.println("your data not valid back to menu .. .");
+                menu();
+        }
 
     }
 }
