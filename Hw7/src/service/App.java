@@ -30,18 +30,20 @@ public class App {
 
         //  Class.forName("com.mysql.jdbc.Driver");
 
-
+        accountRepository = new AccountRepository();
         userTable = new UserRepository();
         categoryTable = new CategoryRepository();
         articleRepository = new ArticleRepository();
         tagTable = new TagRepository();
         tempArticleTag = new TempArticleTagRepository();
-        accountRepository = new AccountRepository();
+
     }
 
     public void start() throws SQLException {
 
+
         userTable.createTable(connection);
+        accountRepository.createAccount(connection);
         categoryTable.createTable(connection);
         articleRepository.createTable(connection);
         tagTable.createTable(connection);
@@ -82,31 +84,37 @@ public class App {
 
             case 3:
                 articleRepository.showAll(connection, null);
+                System.out.println("-".repeat(80));
                 menu();
 
             case 4:
                 articleRepository.showAllFreeArticle(connection);
+                System.out.println("-".repeat(80));;
                 menu();
 
             case 5:
                 articleRepository.showAllNonFreeArticle(connection);
+                System.out.println("-".repeat(80));;
+                menu();
 
             case 6:
                 blockOfUser();
+                System.out.println("-".repeat(80));
                 menu();
 
             case 7:
                 unBlockOfUser();
+                System.out.println("-".repeat(80));
                 menu();
 
             case 8:
                 chargeAccountOfUser();
+                System.out.println("-".repeat(80));
                 menu();
 
             case 9:
                 System.out.println("have nice day by ...!!");
                 System.exit(0);
-
 
         }
 
@@ -118,10 +126,10 @@ public class App {
         String userName = scanner.nextLine();
         User user = userTable.checkExistsUser(userName, connection);
         if (userTable.hasUserWitchUnBlockAccount(user, connection)) {
-            System.out.println("enter how many balance to add your account ...");
+            System.out.println("enter how many balance to add your account ...\n");
             int balance = scanner.nextInt();
             accountRepository.chargeAccount(user, balance, connection);
-        } else System.out.println("this user not exists or blocked accounted -_-");
+        } else System.out.println("this user not exists or blocked accounted -_-\n");
     }
 
     public void blockOfUser() throws SQLException {
@@ -148,15 +156,16 @@ public class App {
         System.out.println("enter password");
         String password = scanner.nextLine();
         User user = userTable.checkExistsUser(userName, password, connection);
+
         if (user == null) {
-            System.out.println("not exists username with this password .. may be wrong username or password try again ...");
+            System.out.println("not exists username with this password .. may be wrong username or password try again ...\n");
             login();
         } else {
             if (accountRepository.checkAccountBlockedUserForLogin(user, connection))
                 userPanel(user);
 
             else {
-                System.out.println("account of user blocked you have not access to account . .");
+                System.out.println("account of user blocked you have not access to account ...\n");
                 menu();
             }
 
