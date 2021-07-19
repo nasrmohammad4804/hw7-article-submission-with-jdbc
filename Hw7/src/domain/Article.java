@@ -11,7 +11,7 @@ public class Article {
     private String content;
     private Timestamp createDate;
     private boolean isPublished;
-    private boolean isFree;
+    private String stateOfMoney;
     private Timestamp lastUpdate;
     private Timestamp publishDate;
     private Category category;
@@ -34,12 +34,12 @@ public class Article {
 
     }
 
-    public boolean isFree() {
-        return isFree;
+    public String getStateOfMoney() {
+        return stateOfMoney;
     }
 
-    public void setFree(boolean free) {
-        isFree = free;
+    public void setStateOfMoney(String free) {
+        stateOfMoney = free;
     }
 
     public void setCreateDate(Timestamp createDate) {
@@ -116,7 +116,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", createDate=" + createDate +
                 ", isPublished=" + isPublished +
-                ", isFree="+isFree+
+                ", stateOfArticle="+stateOfMoney+
                 ", lastUpdate=" + lastUpdate +
                 ", publishDate=" + publishDate +
                 ", categoryId=" + category.getId() +
@@ -132,7 +132,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", createDate=" + createDate +
                 ", isPublished=" + isPublished +
-                ", isFree="+isFree+
+                ", stateOfArticle="+stateOfMoney+
                 ", lastUpdate=" + lastUpdate +
                 ", publishDate=" + publishDate +
                 ", categoryId=" + category.getId() +
