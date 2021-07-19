@@ -10,8 +10,8 @@ public class AccountRepository  {
     public  void createAccount(Connection connection) throws SQLException {
         Statement statement=connection.createStatement();
 
-        statement.executeUpdate("create table account(id int unsigned primary key auto_increment," +
-                "balance int , isBlocked tinyint(1))");
+        statement.executeUpdate("create table if not exists account(id int  primary key auto_increment," +
+                "balance int , isBlocked tinyint(1), foreign key (id) references user(id))");
 
         statement.close();
     }
@@ -39,7 +39,7 @@ public class AccountRepository  {
 
     public static void blockAccount(User user,Connection connection) throws SQLException {
         boolean bool=true;
-        PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as block from user as u inner join account as a on a.id=u.account_id where u.id=?");
+        PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as block from user as u inner join account as a on a.id=u.id where u.id=?");
         preparedStatement.setInt(1,user.getId());
         int counter=0;
         ResultSet resultSet=preparedStatement.executeQuery();
@@ -54,21 +54,22 @@ public class AccountRepository  {
         }
 
         if (!bool){
-            PreparedStatement preparedStatement1=connection.prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.account_id=a.id );");
+            PreparedStatement preparedStatement1=connection.prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.id=a.id );");
 
             preparedStatement1.setBoolean(1,true);
             preparedStatement1.setInt(2,user.getId());
 
             preparedStatement1.executeUpdate();
+            System.out.println("this account by userAdmin blocked ..\n\n");
             preparedStatement1.close();
         }
-        else System.out.println("this account already blocked !!! ");
+        else System.out.println("this account already blocked !!! \n");
 
 
     }
     public static void unBlockAccount(User user,Connection connection) throws SQLException {
         boolean bool=false;
-        PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as myblock from user as u inner join account as a on a.id=u.account_id where u.id=?");
+        PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as myblock from user as u inner join account as a on a.id=u.id where u.id=?");
         preparedStatement.setInt(1,user.getId());
         int counter=0;
         ResultSet resultSet=preparedStatement.executeQuery();
@@ -78,20 +79,21 @@ public class AccountRepository  {
             counter++;
         }
         if (counter==0){
-            System.out.println("this username not exists ... please after time enter correct username !!!");
+            System.out.println("this username not exists ... please after time enter correct username !!!\n");
             return;
         }
 
         if (bool){
-            PreparedStatement preparedStatement1=connection.prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.account_id=a.id );");
+            PreparedStatement preparedStatement1=connection.prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.id=a.id );");
 
             preparedStatement1.setBoolean(1,false);
             preparedStatement1.setInt(2,user.getId());
 
             preparedStatement1.executeUpdate();
+            System.out.println("this account by user admin unblocked after time you can use this account\n");
             preparedStatement1.close();
         }
-        else System.out.println("this account already unblock !!!");
+        else System.out.println("this account already unblock !!!\n");
     }
 
     public void chargeAccount(User user,int balance, Connection connection)throws SQLException{
