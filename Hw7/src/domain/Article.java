@@ -1,6 +1,7 @@
 package domain;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 
 public class Article {
@@ -8,11 +9,11 @@ public class Article {
     private String title;
     private String brief;
     private String content;
-    private Date createDate;
+    private Timestamp createDate;
     private boolean isPublished;
     private boolean isFree;
-    private Date lastUpdate;
-    private Date publishDate;
+    private Timestamp lastUpdate;
+    private Timestamp publishDate;
     private Category category;
     private LinkedList<Tag> list;
 
@@ -41,7 +42,7 @@ public class Article {
         isFree = free;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
 
@@ -49,11 +50,11 @@ public class Article {
         isPublished = published;
     }
 
-    public void setLastUpdate(Date lastUpdate) {
+    public void setLastUpdate(Timestamp lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 
-    public void setPublishDate(Date publishDate) {
+    public void setPublishDate(Timestamp publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -87,7 +88,7 @@ public class Article {
         return content;
     }
 
-    public Date getCreateDate() {
+    public Timestamp getCreateDate() {
         return createDate;
     }
 
@@ -95,11 +96,11 @@ public class Article {
         return isPublished;
     }
 
-    public Date getLastUpdate() {
+    public Timestamp getLastUpdate() {
         return lastUpdate;
     }
 
-    public Date getPublishDate() {
+    public Timestamp getPublishDate() {
         return publishDate;
     }
 
