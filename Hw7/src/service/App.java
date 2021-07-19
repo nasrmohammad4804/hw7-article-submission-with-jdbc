@@ -6,6 +6,7 @@ import domain.User;
 import repository.*;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -262,20 +263,15 @@ public class App {
             String content = sc.nextLine();
 
             System.out.println("enter a create date");
-            Date createDate = Date.valueOf(sc.nextLine());
+            Date createDate = Date.valueOf(LocalDate.now());
 
 
-            System.out.println("enter lastUpdateDate");
-            Date lastUpdateDate = Date.valueOf(sc.nextLine());
-
-            System.out.println("enter an publishDate");
-            Date publishDate = Date.valueOf(sc.nextLine());
 
             Article article = new Article(title, brief, content);
             article.setCreateDate(createDate);
             article.setPublished(false);
-            article.setLastUpdate(lastUpdateDate);
-            article.setPublishDate(publishDate);
+            article.setLastUpdate(null);
+            article.setPublishDate(null);
 
 
             connection.setAutoCommit(false);
