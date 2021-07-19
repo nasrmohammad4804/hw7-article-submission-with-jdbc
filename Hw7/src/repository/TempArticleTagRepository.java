@@ -65,6 +65,23 @@ public class TempArticleTagRepository implements BaseRepository {
         }
 
     }
+    public void addTagForArticle(Article article, Connection connection, int category_id, TagRepository tagTable) throws SQLException {
+        System.out.println("enter number you want tag ...  ");
+
+        int number = scanner.nextInt();
+        scanner.nextLine();
+
+        tagTable.showAll(connection,category_id);
+        for (int i = 1; i <= number; i++) {
+            System.out.println("enter tagName ");
+            String tagName = scanner.nextLine();
+            int result = tagTable.checkTagExists(connection, tagName);
+            addRowToTempArticleTagTable(connection, article.getId(), result);
+
+        }
+
+
+    }
     private void addRowToTempArticleTagTable(Connection connection, int articleId, int tagId) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("" +
                 "insert into temp_article_tag(article_id , tag_id) values (?,?)");
