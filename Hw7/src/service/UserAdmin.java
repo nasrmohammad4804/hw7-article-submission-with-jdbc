@@ -16,7 +16,7 @@ public class UserAdmin {
         AccountRepository.unBlockAccount(user,connection);
     }
 
-    public boolean confirmToRegisterUser(){
+    public static boolean confirmToRegisterUser(){
         Scanner scanner=new Scanner( System.in);
 
         System.out.println("userAdmin want you register this user\nif you enter yes if dont want enter no");
