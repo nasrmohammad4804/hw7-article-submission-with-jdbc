@@ -259,7 +259,7 @@ public class App {
                 userTable.changePasswordOfUser(connection, user, pass);
             }
 
-            case 2 -> menu();
+            case 2 -> userPanel(user);
 
             default -> {
                 System.out.println("your data not valid back to menu .. .");

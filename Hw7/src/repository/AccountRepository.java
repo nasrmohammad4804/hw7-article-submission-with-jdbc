@@ -113,6 +113,8 @@ public class AccountRepository  {
         preparedStatement1.setInt(2,accountId);
         preparedStatement1.executeUpdate();
 
+        System.out.println(String.format("account is charged :  %d   your current balances is : %d \n",balance,myBalance));
+
         preparedStatement.close();
         preparedStatement1.close();
 

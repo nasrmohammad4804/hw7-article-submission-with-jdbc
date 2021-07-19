@@ -139,7 +139,7 @@ public class ArticleRepository implements BaseRepository{
                 sc.nextLine();
                 System.out.println("enter new content");
                 String content = sc.nextLine();
-                preparedStatement = connection.prepareStatement("update article as a set a.content=? where a.id=? ,lastUpdateDate=? and a.user_id=?");
+                preparedStatement = connection.prepareStatement("update article as a set a.content=? ,lastUpdateDate=? where a.id=?  and a.user_id=?");
                 preparedStatement.setString(1, content);
                 preparedStatement.setDate(2,Date.valueOf(LocalDate.now()));
                 preparedStatement.setInt(3, idOfArticle);
