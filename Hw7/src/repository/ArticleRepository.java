@@ -22,6 +22,7 @@ public class ArticleRepository implements BaseRepository{
             domain.Article article = ArticleMapper.mapToArticleObject(resultSet);
             article.setCategory(new Category(resultSet.getInt("category_id"),
                     CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"), connection.createStatement())));
+            article.setFree(resultSet.getBoolean("isFree"));
 
 
             article.print();
@@ -33,12 +34,13 @@ public class ArticleRepository implements BaseRepository{
 
         Statement statement=connection.createStatement();
 
-       ResultSet resultSet =  statement.executeQuery("select  * from article as a where isPublished=1 and isFree=1");
+       ResultSet resultSet =  statement.executeQuery("select  * from article  where isPublished=1 and isFree=1");
 
        while (resultSet.next()){
            Article article = ArticleMapper.mapToArticleObject(resultSet);
            article.setCategory(new Category(resultSet.getInt("category_id"),CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"),
                    connection.createStatement())));
+           article.setFree(resultSet.getBoolean("isFree"));
 
            article.print();
            System.out.println("*".repeat(80));
@@ -49,13 +51,14 @@ public class ArticleRepository implements BaseRepository{
 
         Statement statement=connection.createStatement();
 
-        ResultSet result =  statement.executeQuery("select  * from article as a where isPublished=1 and isFree=0");
+        ResultSet result =  statement.executeQuery("select  * from article as a where isPublished=1 and isFree=0 ");
 
         while ( result.next() ){
 
             Article article = ArticleMapper.mapToArticleObject(result);
             article.setCategory(new Category(result.getInt("category_id"),CategoryRepository.getTitleOfCategory(result.getInt("category_id"),
                     connection.createStatement())));
+            article.setFree(result.getBoolean("isFree"));
 
             article.print();
             System.out.println("*".repeat(80));
@@ -70,7 +73,7 @@ public class ArticleRepository implements BaseRepository{
         statement.executeUpdate("create table if not exists article " +
                 "(id int primary key auto_increment , title varchar(50) not null ," +
                 "brief varchar (50) not null , content text   , " +
-                "createDate date , isPublished tinyint(1)  , isFree tinyint(1) " +
+                "createDate date , isPublished tinyint(1)  , isFree tinyint(1) , " +
                 "lastUpdateDate date , publishDate date , " +
                 "user_id int , category_id int , " +
                 "foreign key  (user_id) references user(id) , " +
