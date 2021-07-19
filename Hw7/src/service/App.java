@@ -73,47 +73,57 @@ public class App {
         int number = scanner.nextInt();
         scanner.nextLine();
         switch (number) {
-            case 1:
-                login();
-                break;
+            case 1 -> login();
 
-            case 2:
-                register();
-                break;
+            case 2 -> register();
 
-            case 3:
+            case 3 -> {
                 articleRepository.showAll(connection, null);
                 System.out.println("-".repeat(80));
                 menu();
+            }
 
-            case 4:
+            case 4 -> {
                 articleRepository.showAllFreeArticle(connection);
-                System.out.println("-".repeat(80));;
+                System.out.println("-".repeat(80));
+                ;
                 menu();
+            }
 
-            case 5:
+            case 5 -> {
                 articleRepository.showAllNonFreeArticle(connection);
-                System.out.println("-".repeat(80));;
+                System.out.println("-".repeat(80));
+                ;
                 menu();
+            }
 
-            case 6:
+            case 6 -> {
                 blockOfUser();
                 System.out.println("-".repeat(80));
                 menu();
+            }
 
-            case 7:
+            case 7 -> {
                 unBlockOfUser();
                 System.out.println("-".repeat(80));
                 menu();
+            }
 
-            case 8:
+            case 8 -> {
                 chargeAccountOfUser();
                 System.out.println("-".repeat(80));
                 menu();
+            }
 
-            case 9:
+            case 9 -> {
                 System.out.println("have nice day by ...!!");
                 System.exit(0);
+            }
+            default -> {
+                System.out.println("your data not valid try again ...");
+                menu();
+            }
+
 
         }
 
@@ -226,101 +236,105 @@ public class App {
                     break;
                 }
 
-            case 3: createArticle(user);
-                    userPanel(user);
-                    break;
+            case 3:
+                createArticle(user);
+                userPanel(user);
+                break;
 
             case 4:
                 start();
         }
     }
-        private void changingPassword (User user) throws SQLException {
-            System.out.println("if you want changing password  " +
-                    "press #1 else press #2");
 
-            switch (scanner.nextInt()) {
-                case 1:
-                    System.out.println("enter new password");
-                    scanner.nextLine();
-                    String pass = scanner.nextLine();
-                    userTable.changePasswordOfUser(connection, user, pass);
-                    break;
+    private void changingPassword(User user) throws SQLException {
+        System.out.println("if you want changing password  " +
+                "press #1 else press #2");
 
-                case 2:
-                    break;
+        switch (scanner.nextInt()) {
+            case 1:
+                System.out.println("enter new password");
+                scanner.nextLine();
+                String pass = scanner.nextLine();
+                userTable.changePasswordOfUser(connection, user, pass);
+                break;
 
-                default:
-                    System.out.println("your data not valid back to menu .. .");
-                    menu();
-            }
+            case 2:
+                break;
 
+            default:
+                System.out.println("your data not valid back to menu .. .");
+                menu();
         }
-        public void createArticle (User user) throws SQLException {
-             Scanner sc = new Scanner(System.in); //TODO ---------------------------//
 
-              int result = checkCategoryExists();
-
-
-            System.out.println("enter a title for article ");
-            String title = sc.nextLine();
-
-            System.out.println("enter brief");
-            String brief = sc.nextLine();
-
-            System.out.println("enter a content");
-            String content = sc.nextLine();
-
-            System.out.println("enter a create date");
-            Date createDate = Date.valueOf(LocalDate.now());
-
-
-
-            Article article = new Article(title, brief, content);
-            article.setCreateDate(createDate);
-            article.setPublished(false);
-            article.setLastUpdate(null);
-            article.setPublishDate(null);
-
-
-            connection.setAutoCommit(false);
-               articleRepository.addArticle(connection, article, user, result);
-            article.setId(articleRepository.size(connection));
-
-             tempArticleTag.addTagForArticle(article, connection,result,tagTable);
-            connection.commit();
-
-        }
-        public int checkCategoryExists() throws SQLException {
-            Scanner str = new Scanner(System.in);
-            categoryTable.showAll(connection, null);
-            System.out.println("enter one category for your article");
-            String title = str.nextLine();
-
-            int result = 0;
-            List<String> list = new LinkedList<>();
-
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery("select  * from category");
-
-            while (resultSet.next()) {
-                list.add(resultSet.getString("title"));
-                if (resultSet.getString("title").equals(title))
-                    result = resultSet.getInt("id");
-
-            }
-
-            if (!list.contains(title)) {
-                str.nextLine();
-                categoryTable.add(connection, title);
-                categoryTable.showAll(connection, null);
-                return list.size() + 1;
-
-
-            } else return result;
-        }
-        public void closeOfResource()throws SQLException{
-            connection.close();
-        }
     }
+
+    public void createArticle(User user) throws SQLException {
+        Scanner sc = new Scanner(System.in); //TODO ---------------------------//
+
+        int result = checkCategoryExists();
+
+
+        System.out.println("enter a title for article ");
+        String title = sc.nextLine();
+
+        System.out.println("enter brief");
+        String brief = sc.nextLine();
+
+        System.out.println("enter a content");
+        String content = sc.nextLine();
+
+        System.out.println("enter a create date");
+        Date createDate = Date.valueOf(LocalDate.now());
+
+
+        Article article = new Article(title, brief, content);
+        article.setCreateDate(createDate);
+        article.setPublished(false);
+        article.setLastUpdate(null);
+        article.setPublishDate(null);
+
+
+        connection.setAutoCommit(false);
+        articleRepository.addArticle(connection, article, user, result);
+        article.setId(articleRepository.size(connection));
+
+        tempArticleTag.addTagForArticle(article, connection, result, tagTable);
+        connection.commit();
+
+    }
+
+    public int checkCategoryExists() throws SQLException {
+        Scanner str = new Scanner(System.in);
+        categoryTable.showAll(connection, null);
+        System.out.println("enter one category for your article");
+        String title = str.nextLine();
+
+        int result = 0;
+        List<String> list = new LinkedList<>();
+
+        Statement statement = connection.createStatement();
+
+        ResultSet resultSet = statement.executeQuery("select  * from category");
+
+        while (resultSet.next()) {
+            list.add(resultSet.getString("title"));
+            if (resultSet.getString("title").equals(title))
+                result = resultSet.getInt("id");
+
+        }
+
+        if (!list.contains(title)) {
+            str.nextLine();
+            categoryTable.add(connection, title);
+            categoryTable.showAll(connection, null);
+            return list.size() + 1;
+
+
+        } else return result;
+    }
+
+    public void closeOfResource() throws SQLException {
+        connection.close();
+    }
+}
 
