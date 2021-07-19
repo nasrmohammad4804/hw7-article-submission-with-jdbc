@@ -15,6 +15,7 @@ public class AccountRepository  {
 
         statement.close();
     }
+
     public static Account addAccount(Connection connection) throws SQLException {
         PreparedStatement preparedStatement=connection.prepareStatement("insert into account(balance,isBlocked) values " +
                 "(?,?)");

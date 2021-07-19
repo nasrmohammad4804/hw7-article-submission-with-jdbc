@@ -170,9 +170,10 @@ public class App {
             System.out.println("not exists username with this password .. may be wrong username or password try again ...\n");
             login();
         } else {
-            if (accountRepository.checkAccountBlockedUserForLogin(user, connection))
+            if (accountRepository.checkAccountBlockedUserForLogin(user, connection)){
+                changingPassword(user);
                 userPanel(user);
-
+            }
             else {
                 System.out.println("account of user blocked you have not access to account ...\n");
                 menu();
@@ -298,7 +299,7 @@ public class App {
         articleRepository.addArticle(connection, article, user, result);
         article.setId(articleRepository.size(connection));
 
-        tempArticleTag.addTagForArticle(article, connection, result, tagTable);
+        tempArticleTag.add( connection,article, result, tagTable);
         connection.commit();
 
     }
