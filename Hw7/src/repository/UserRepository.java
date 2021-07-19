@@ -1,7 +1,9 @@
 package repository;
 
+import domain.Account;
 import domain.Article;
 import domain.User;
+import mapper.AccountMapper;
 import mapper.ArticleMapper;
 import mapper.UserMapper;
 
@@ -17,9 +19,9 @@ public class UserRepository implements BaseRepository {
     @Override
     public void createTable(Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
-        statement.executeUpdate("create table if not exists user (id int primary key auto_increment," +
-                "username varchar (50) not null unique , nationalcode varchar (50) unique not null," +
-                "birthday date ,  password varchar (50) not null, account_id int not null unique , foreign key account_id references account(id))");
+        statement.executeUpdate("create table if not exists user (id int  primary key auto_increment," +
+                "username varchar(50) not null unique , nationalcode varchar(50) not null unique ," +
+                "birthday date ,  password varchar(50) not null)");
     }
 
     @Override
@@ -48,7 +50,7 @@ public class UserRepository implements BaseRepository {
         preparedStatement.setString(4, user.getNationalCode());
 
         preparedStatement.executeUpdate();
-        AccountRepository.addAccount(connection);
+        user.setAccount(AccountRepository.addAccount(connection));
         connection.commit();
 
         connection.setAutoCommit(true);
@@ -56,13 +58,20 @@ public class UserRepository implements BaseRepository {
         preparedStatement.close();
 
     }
+    private int getIdOfUser(String userName,Connection connection) throws SQLException {
+        PreparedStatement preparedStatement =connection.prepareStatement("select id from user where username=?");
+        preparedStatement.setString(1,userName);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("id");
+    }
     private User checkForRegister(String userName, Connection connection) throws SQLException {
         int counter = 0;
 
-        PreparedStatement preparedStatement = connection.prepareStatement("select  * from user where username =? ");
+        int userId=getIdOfUser(userName,connection);
+        PreparedStatement preparedStatement = connection.prepareStatement("select  u.* , a.id as account_id , a.balance , a.isBlocked from user as u  inner join account as a on a.id=?  "); //TODO
 
-        preparedStatement.setString(1, userName);
-
+        preparedStatement.setInt(1, userId);
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -72,6 +81,7 @@ public class UserRepository implements BaseRepository {
             counter++;
 
             user = UserMapper.mapTOUserObject(resultSet);
+            user.setAccount(AccountMapper.mapToAccountObject(resultSet));
         }
 
         preparedStatement.close();
@@ -92,7 +102,7 @@ public class UserRepository implements BaseRepository {
 
         int number = 0;
 
-        PreparedStatement preparedStatement = connection.prepareStatement("select  * from user where username =? and password=? ");
+        PreparedStatement preparedStatement = connection.prepareStatement("select  u.* , a.id as account_id , a.balance , a.isBlocked from user as u inner join account as a on a.id=u.id where  username =? and password=? ");
 
         preparedStatement.setString(1, userName);
         preparedStatement.setString(2, password);
@@ -105,6 +115,7 @@ public class UserRepository implements BaseRepository {
             number++;
 
             user = UserMapper.mapTOUserObject(resultSet);
+            user.setAccount(AccountMapper.mapToAccountObject(resultSet));
         }
         if (number == 0)
             return null;
@@ -139,16 +150,19 @@ public class UserRepository implements BaseRepository {
         PreparedStatement preparedStatement = connection.prepareStatement("insert into user(username,nationalcode,birthday,password) " +
                 "values (?,?,?,?)");
         connection.setAutoCommit(false);
+
         preparedStatement.setString(1,"mmn4804");
         preparedStatement.setString(2,"1285672345");
         preparedStatement.setDate(3,Date.valueOf("1367-08-11"));
         preparedStatement.setString(4,"13804804");
         preparedStatement.executeUpdate();
         AccountRepository.addAccount(connection);
+
         connection.commit();
         connection.setAutoCommit(true);
 
         connection.setAutoCommit(false);
+
         preparedStatement.setString(1,"ali1507");
         preparedStatement.setString(2,"1273427234");
         preparedStatement.setDate(3,Date.valueOf("1381-02-26"));
@@ -165,6 +179,7 @@ public class UserRepository implements BaseRepository {
     public boolean hasUserWitchUnBlockAccount(User user , Connection connection) throws SQLException {
         PreparedStatement preparedStatement=connection.prepareStatement("select  * from user as u inner join account as a " +
                 " on a.id=? and a.isBlocked=?");
+
 
         preparedStatement.setInt(1,user.getAccount().getId());
         preparedStatement.setBoolean(2,false);
