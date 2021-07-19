@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class AccountRepository  {
 
-    public static void createAccount(Connection connection) throws SQLException {
+    public  void createAccount(Connection connection) throws SQLException {
         Statement statement=connection.createStatement();
 
         statement.executeUpdate("create table account(id int unsigned primary key auto_increment," +
@@ -99,6 +99,21 @@ public class AccountRepository  {
         preparedStatement1.close();
 
 
+    }
+    public boolean checkAccountBlockedUserForLogin(User user, Connection connection) throws SQLException {
+
+        PreparedStatement preparedStatement=connection.prepareStatement("" +
+                "select  * from user as u inner join account as a on a.id=? and a.isBlocked=false ");
+
+        preparedStatement.setInt(1,user.getAccount().getId());
+
+        int counter=0;
+        ResultSet resultSet =preparedStatement.executeQuery();
+
+        while (resultSet.next())
+            counter++;
+
+        return counter>0 ? true : false;
     }
 
 
