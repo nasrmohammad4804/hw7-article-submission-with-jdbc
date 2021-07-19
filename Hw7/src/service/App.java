@@ -129,10 +129,33 @@ public class App {
           UserAdmin.unBlockAccount(user,connection);
       }
 
-    public void login(){
+    public void login() throws SQLException {
+        System.out.println("enter username ##");
+        String userName=scanner.nextLine();
 
+        System.out.println("enter password");
+        String password=scanner.nextLine();
+        User user =userTable.checkExistsUser(userName,password,connection);
+        if(user== null) {
+            System.out.println("not exists username with this password .. may be wrong username or password try again ...");
+            login();
+        }
+        else {
+            if(accountRepository.checkAccountBlockedUserForLogin(user,connection))
+                userPanel(user);
+
+            else {
+                System.out.println("account of user blocked you have not access to account . .");
+                menu();
+            }
+
+        }
     }
     public void register(){
+
+    }
+
+    public void userPanel(User user){
 
     }
 }
