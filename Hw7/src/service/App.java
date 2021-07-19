@@ -1,6 +1,5 @@
 package service;
 
-import domain.Account;
 import domain.Article;
 import domain.User;
 import repository.*;
