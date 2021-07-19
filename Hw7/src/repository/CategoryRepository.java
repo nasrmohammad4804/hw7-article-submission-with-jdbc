@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class CategoryRepository implements BaseRepository {
     @Override
-    public void showAll(Connection connection, Object  object) throws SQLException {
+    public final  <T> void showAll(Connection connection, T... value) throws SQLException {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select  * from category");
 
@@ -16,6 +16,7 @@ public class CategoryRepository implements BaseRepository {
                     + " , category_description : " + resultSet.getString("description"));
         }
     }
+
 
     @Override
     public void createTable(Connection connection) throws SQLException {
@@ -53,8 +54,8 @@ public class CategoryRepository implements BaseRepository {
     }
 
     @Override
-    public void add(Connection connection, Object str) throws SQLException {
-        String title=(String) str;
+    public <T> void add(Connection connection, T... str) throws SQLException {
+        String title=(String) str[0];
         Scanner scanner = new Scanner(System.in);
 
 
@@ -69,8 +70,9 @@ public class CategoryRepository implements BaseRepository {
         preparedStatement.executeUpdate();
 
         preparedStatement.close();
-
     }
+
+
     public static String getTitleOfCategory(int categoryId, Statement statement) throws SQLException {
 
         ResultSet resultSet = statement.executeQuery("select * from category where id =" + categoryId);

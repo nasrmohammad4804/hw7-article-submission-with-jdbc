@@ -10,11 +10,11 @@ import java.sql.SQLException;
 public interface BaseRepository {
 
 
-    void showAll(Connection connection, Object object) throws SQLException;
+     <T extends Object > void showAll(Connection connection, T ... value) throws SQLException;
 
     void createTable(Connection connection)throws SQLException;
 
-    default void add(Connection connection, Object str) throws SQLException{
+    default <T extends Object> void add(Connection connection, T ... str) throws SQLException{
         //...........
     }
 

@@ -4,9 +4,12 @@ import java.sql.*;
 
 public class TagRepository implements BaseRepository{
     @Override
-    public void showAll(Connection connection, Object object) throws SQLException {
+    public final  <T> void showAll(Connection connection, T... value) throws SQLException {
 
-        int category_id=(int) object;
+        int category_id=0;
+
+        if(value[0] instanceof Integer)
+         category_id=(int) value[0];
 
         PreparedStatement preparedStatement=connection.prepareStatement("" +
                 "select temp from (select t.title as temp from tag as t inner join temp_article_tag as tat on tat.tag_id=t.id inner  join article as a "+
@@ -25,6 +28,7 @@ public class TagRepository implements BaseRepository{
 
         System.out.println("------------------------------------------------------------");
     }
+
 
     @Override
     public void createTable(Connection connection) throws SQLException {
@@ -50,8 +54,8 @@ public class TagRepository implements BaseRepository{
     }
 
     @Override
-    public void add(Connection connection, Object str) throws SQLException {
-        String tag=(String) str;
+    public <T> void add(Connection connection, T... str) throws SQLException {
+        String tag=(String) str[0];
         PreparedStatement preparedStatement = connection.prepareStatement("insert into tag(title) value (?)");
 
         preparedStatement.setString(1, tag);
@@ -60,6 +64,8 @@ public class TagRepository implements BaseRepository{
 
         preparedStatement.close();
     }
+
+
     public  int checkTagExists(Connection connection, String tagName) throws SQLException {
 
         int id = -1;

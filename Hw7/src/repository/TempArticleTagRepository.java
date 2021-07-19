@@ -15,8 +15,13 @@ public class TempArticleTagRepository implements BaseRepository {
     private Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void showAll(Connection connection, Object object) throws SQLException {
-        User user = (User) object;
+    public final  <T extends Object> void showAll(Connection connection, T... value) throws SQLException {
+
+        User user=null;
+
+        if(value[0] instanceof User)
+         user= (User) value[0];
+
         List<Integer> set = new LinkedList<>();
         PreparedStatement preparedStatement = connection.prepareStatement("select * from article as a where user_id=?");
 
@@ -29,7 +34,7 @@ public class TempArticleTagRepository implements BaseRepository {
             set.add(resultSet.getInt("id"));
         }
 
-        System.out.println(set);
+        //System.out.println(set);
 
         for (int i = 0; i < set.size(); i++) {
             PreparedStatement preparedStatement1 = connection.prepareStatement("select a.* ,t.title as tagName, t.id as tid , c.id as  cat_id , c.title as cat_title  from temp_article_tag as tat join " +
@@ -63,25 +68,29 @@ public class TempArticleTagRepository implements BaseRepository {
             System.out.println("*".repeat(90));
 
         }
-
     }
-    public void addTagForArticle(Article article, Connection connection, int category_id, TagRepository tagTable) throws SQLException {
+
+
+    @Override
+    public <T> void add(Connection connection, T... str) throws SQLException {
+        Article article = (Article) str[0];
+        int category_id = (int) str[1];
+        TagRepository tagTable = (TagRepository) str[2];
+
         System.out.println("enter number you want tag ...  ");
 
         int number = scanner.nextInt();
         scanner.nextLine();
 
-        tagTable.showAll(connection,category_id);
+        tagTable.showAll(connection, category_id);
         for (int i = 1; i <= number; i++) {
             System.out.println("enter tagName ");
             String tagName = scanner.nextLine();
             int result = tagTable.checkTagExists(connection, tagName);
             addRowToTempArticleTagTable(connection, article.getId(), result);
-
         }
-
-
     }
+
     private void addRowToTempArticleTagTable(Connection connection, int articleId, int tagId) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("" +
                 "insert into temp_article_tag(article_id , tag_id) values (?,?)");

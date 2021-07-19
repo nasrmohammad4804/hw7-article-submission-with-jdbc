@@ -1,6 +1,5 @@
 package repository;
 
-import domain.Account;
 import domain.Article;
 import domain.User;
 import mapper.AccountMapper;
@@ -11,10 +10,13 @@ import java.sql.*;
 
 public class UserRepository implements BaseRepository {
 
+
+
     @Override
-    public void showAll(Connection connection, Object object) throws SQLException {
-            // TODO
+    public final void showAll(Connection connection, Object... value) throws SQLException {
+        // ............. no idea  specific implemention
     }
+
 
     @Override
     public void createTable(Connection connection) throws SQLException {
@@ -36,9 +38,10 @@ public class UserRepository implements BaseRepository {
         return number;
 
     }
+
     @Override
-    public void add(Connection connection, Object object) throws SQLException {
-        User user=(User) object;
+    public <T> void add(Connection connection, T... str) throws SQLException {
+        User user=(User) str[0];
         PreparedStatement preparedStatement = connection.prepareStatement("insert into user(username, nationalcode , birthday, password) values (?,?,?,?)");
 
         connection.setAutoCommit(false);
@@ -56,14 +59,17 @@ public class UserRepository implements BaseRepository {
         connection.setAutoCommit(true);
 
         preparedStatement.close();
-
     }
+
     private int getIdOfUser(String userName,Connection connection) throws SQLException {
         PreparedStatement preparedStatement =connection.prepareStatement("select id from user where username=?");
         preparedStatement.setString(1,userName);
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-        return resultSet.getInt("id");
+        int counter=0;
+        while (resultSet.next())
+       counter = resultSet.getInt("id");
+
+        return counter;
     }
     private User checkForRegister(String userName, Connection connection) throws SQLException {
         int counter = 0;
