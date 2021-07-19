@@ -184,11 +184,11 @@ public class UserRepository implements BaseRepository {
     }
     public boolean hasUserWitchUnBlockAccount(User user , Connection connection) throws SQLException {
         PreparedStatement preparedStatement=connection.prepareStatement("select  * from user as u inner join account as a " +
-                " on a.id=? and a.isBlocked=?");
+                " on a.id=? and a.isBlocked=0");
 
 
         preparedStatement.setInt(1,user.getAccount().getId());
-        preparedStatement.setBoolean(2,false);
+
 
         ResultSet resultSet =preparedStatement.executeQuery();
         int counter=0;
