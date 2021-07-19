@@ -38,6 +38,12 @@ public class User {
 
         setPassword(nationalCode);
     }
+    public User(String userName , String nationalCode , Date birthDay){
+        this.userName=userName;
+        this.nationalCode=nationalCode;
+        this.birthDay=birthDay;
+    }
+
 
     public Account getAccount() {
         return account;
