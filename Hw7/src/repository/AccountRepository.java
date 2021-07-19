@@ -1,5 +1,6 @@
 package repository;
 
+import domain.Account;
 import domain.User;
 
 import java.sql.*;
@@ -14,11 +15,25 @@ public class AccountRepository  {
 
         statement.close();
     }
-    public static void addAccount(Connection connection) throws SQLException {
+    public static Account addAccount(Connection connection) throws SQLException {
         PreparedStatement preparedStatement=connection.prepareStatement("insert into account(balance,isBlocked) values " +
                 "(?,?)");
         preparedStatement.setInt(1,0);
         preparedStatement.setBoolean(2,false);
+        preparedStatement.executeUpdate();
+
+        preparedStatement.close();
+
+       return new Account(size(connection),0,false);
+
+
+    }
+    public static int size(Connection connection) throws SQLException {
+       Statement statement=  connection.createStatement();
+      ResultSet resultSet=  statement.executeQuery("select  count(*) from account");
+
+      resultSet.next();
+      return resultSet.getInt(1);
     }
 
 
