@@ -123,7 +123,7 @@ public class AccountRepository  {
     public boolean checkAccountBlockedUserForLogin(User user, Connection connection) throws SQLException {
 
         PreparedStatement preparedStatement=connection.prepareStatement("" +
-                "select  * from user as u inner join account as a on a.id=? and a.isBlocked=false ");
+                "select  * from user as u inner join account as a on a.id=? and a.isBlocked=0 ");
 
         preparedStatement.setInt(1,user.getAccount().getId());
 
@@ -133,7 +133,7 @@ public class AccountRepository  {
         while (resultSet.next())
             counter++;
 
-        return counter>0 ? true : false;
+        return counter>0 ? false : true;
     }
 
 
