@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class ArticleRepository implements BaseRepository{
 
     @Override
-    public void showAll(Connection connection, Object object) throws SQLException {
+    public final <T> void showAll(Connection connection, T... value) throws SQLException {
         Statement statement = connection.createStatement();
 
         ResultSet resultSet = statement.executeQuery("select * from article where isPublished=1 ");
@@ -29,6 +29,7 @@ public class ArticleRepository implements BaseRepository{
             System.out.println("*".repeat(80));
         }
     }
+
 
     public void showAllFreeArticle(Connection connection) throws SQLException {
 
