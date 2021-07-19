@@ -237,10 +237,10 @@ public class ArticleRepository implements BaseRepository{
         preparedStatement.setString(1, article.getTitle());
         preparedStatement.setString(2, article.getBrief());
         preparedStatement.setString(3, article.getContent());
-        preparedStatement.setDate(4, article.getCreateDate());
+        preparedStatement.setTimestamp(4, article.getCreateDate());
         preparedStatement.setBoolean(5, article.isPublished());
-        preparedStatement.setDate(6, article.getLastUpdate());
-        preparedStatement.setDate(7, article.getPublishDate());
+        preparedStatement.setTimestamp(6, article.getLastUpdate());
+        preparedStatement.setTimestamp(7, article.getPublishDate());
         preparedStatement.setInt(8, user.getId());
         preparedStatement.setInt(9, categoryId);
 

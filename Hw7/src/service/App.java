@@ -6,6 +6,7 @@ import repository.*;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -285,7 +286,7 @@ public class App {
         String content = sc.nextLine();
 
         System.out.println("enter a create date");
-        Date createDate = Date.valueOf(LocalDate.now());
+        Timestamp createDate = Timestamp.valueOf(LocalDateTime.now());
 
 
         Article article = new Article(title, brief, content);

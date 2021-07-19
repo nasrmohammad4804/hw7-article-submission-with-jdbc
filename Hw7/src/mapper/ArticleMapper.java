@@ -13,10 +13,10 @@ public class ArticleMapper {
                 resultSet.getString("title"),
                 resultSet.getString("brief"),
                 resultSet.getString("content"));
-        article.setCreateDate(resultSet.getDate("createDate"));
+        article.setCreateDate(resultSet.getTimestamp("createDate"));
         article.setPublished(resultSet.getBoolean("isPublished"));
-        article.setLastUpdate(resultSet.getDate("lastUpdateDate"));
-        article.setPublishDate(resultSet.getDate("publishDate"));
+        article.setLastUpdate(resultSet.getTimestamp("lastUpdateDate"));
+        article.setPublishDate(resultSet.getTimestamp("publishDate"));
 
         return article;
     }
