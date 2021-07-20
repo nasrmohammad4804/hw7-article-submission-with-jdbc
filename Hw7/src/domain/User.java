@@ -44,6 +44,17 @@ public class User {
         this.birthDay=birthDay;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", nationalCode='" + nationalCode + '\'' +
+                ", birthDay=" + birthDay +
+                ", password='" + password + '\'' +
+                ", account=" + account +
+                '}';
+    }
 
     public Account getAccount() {
         return account;

@@ -1,17 +1,19 @@
 package repository;
 
+import service.ApplicationContext;
+
 import java.sql.*;
 
 public class TagRepository implements BaseRepository{
     @Override
-    public final  <T> void showAll(Connection connection, T... value) throws SQLException {
+    public final  <T> void showAll( T... value) throws SQLException {
 
         int category_id=0;
 
         if(value[0] instanceof Integer)
          category_id=(int) value[0];
 
-        PreparedStatement preparedStatement=connection.prepareStatement("" +
+        PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("" +
                 "select temp from (select t.title as temp from tag as t inner join temp_article_tag as tat on tat.tag_id=t.id inner  join article as a "+
                 "on a.id=tat.article_id where a.category_id = ? ) as ptr group by temp ");
 
@@ -31,8 +33,8 @@ public class TagRepository implements BaseRepository{
 
 
     @Override
-    public void createTable(Connection connection) throws SQLException {
-        Statement statement = connection.createStatement();
+    public void createTable() throws SQLException {
+        Statement statement = ApplicationContext.getConnection().createStatement();
 
         statement.executeUpdate("create table if not exists " +
                 "tag(id int primary key auto_increment, title varchar(50) not null )");
@@ -41,9 +43,9 @@ public class TagRepository implements BaseRepository{
     }
 
     @Override
-    public  int size(Connection connection) throws SQLException {
+    public  int size() throws SQLException {
         int number = 0;
-        Statement statement = connection.createStatement();
+        Statement statement = ApplicationContext.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery("select * from tag;");
         while (resultSet.next())
             number++;
@@ -54,9 +56,9 @@ public class TagRepository implements BaseRepository{
     }
 
     @Override
-    public <T> void add(Connection connection, T... str) throws SQLException {
+    public <T> void add( T... str) throws SQLException {
         String tag=(String) str[0];
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into tag(title) value (?)");
+        PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("insert into tag(title) value (?)");
 
         preparedStatement.setString(1, tag);
 
@@ -66,10 +68,10 @@ public class TagRepository implements BaseRepository{
     }
 
 
-    public  int checkTagExists(Connection connection, String tagName) throws SQLException {
+    public  int checkTagExists( String tagName) throws SQLException {
 
         int id = -1;
-        PreparedStatement preparedStatement = connection.prepareStatement("" +
+        PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("" +
                 "select * from tag where title=? ");
 
         preparedStatement.setString(1, tagName);
@@ -84,8 +86,8 @@ public class TagRepository implements BaseRepository{
         }
         preparedStatement.close();
         if (id == -1) {
-            add( connection,tagName);
-            id = size(connection);
+            add( tagName);
+            id = size();
 
         }
 
