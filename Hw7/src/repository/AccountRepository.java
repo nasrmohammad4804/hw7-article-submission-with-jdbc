@@ -2,13 +2,15 @@ package repository;
 
 import domain.Account;
 import domain.User;
+import service.ApplicationContext;
 
 import java.sql.*;
 
 public class AccountRepository  {
 
-    public  void createAccount(Connection connection) throws SQLException {
-        Statement statement=connection.createStatement();
+    public  void createAccount() throws SQLException {
+
+        Statement statement= ApplicationContext.getConnection().createStatement();
 
         statement.executeUpdate("create table if not exists account(id int  primary key auto_increment," +
                 "balance int , isBlocked tinyint(1), foreign key (id) references user(id))");
@@ -16,8 +18,8 @@ public class AccountRepository  {
         statement.close();
     }
 
-    public static Account addAccount(Connection connection) throws SQLException {
-        PreparedStatement preparedStatement=connection.prepareStatement("insert into account(balance,isBlocked) values " +
+    public static Account addAccount() throws SQLException {
+        PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("insert into account(balance,isBlocked) values " +
                 "(?,?)");
         preparedStatement.setInt(1,0);
         preparedStatement.setBoolean(2,false);
@@ -25,7 +27,7 @@ public class AccountRepository  {
 
         preparedStatement.close();
 
-       return new Account(size(connection),0,false);
+       return new Account(size(ApplicationContext.getConnection()),0,false);
 
 
     }
@@ -38,9 +40,9 @@ public class AccountRepository  {
     }
 
 
-    public static void blockAccount(User user,Connection connection) throws SQLException {
+    public static void blockAccount(User user) throws SQLException {
         boolean bool=true;
-        PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as block from user as u inner join account as a on a.id=u.id where u.id=?");
+        PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("select  u.* , a.isBlocked as block from user as u inner join account as a on a.id=u.id where u.id=?");
         preparedStatement.setInt(1,user.getId());
         int counter=0;
         ResultSet resultSet=preparedStatement.executeQuery();
@@ -55,22 +57,22 @@ public class AccountRepository  {
         }
 
         if (!bool){
-            PreparedStatement preparedStatement1=connection.prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.id=a.id );");
+            PreparedStatement preparedStatement1=ApplicationContext.getConnection().prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.id=a.id );");
 
             preparedStatement1.setBoolean(1,true);
             preparedStatement1.setInt(2,user.getId());
 
             preparedStatement1.executeUpdate();
-            System.out.println("this account by userAdmin blocked ..\n\n");
+//            System.out.println("this account by userAdmin blocked ..\n\n");
             preparedStatement1.close();
         }
         else System.out.println("this account already blocked !!! \n");
 
 
     }
-    public static void unBlockAccount(User user,Connection connection) throws SQLException {
+    public static void unBlockAccount(User user) throws SQLException {
         boolean bool=false;
-        PreparedStatement preparedStatement=connection.prepareStatement("select  u.* , a.isBlocked as myblock from user as u inner join account as a on a.id=u.id where u.id=?");
+        PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("select  u.* , a.isBlocked as myblock from user as u inner join account as a on a.id=u.id where u.id=?");
         preparedStatement.setInt(1,user.getId());
         int counter=0;
         ResultSet resultSet=preparedStatement.executeQuery();
@@ -85,20 +87,20 @@ public class AccountRepository  {
         }
 
         if (bool){
-            PreparedStatement preparedStatement1=connection.prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.id=a.id );");
+            PreparedStatement preparedStatement1=ApplicationContext.getConnection().prepareStatement("update account as a set isBlocked=? where exists( select * from user as u where u.id=? and u.id=a.id );");
 
             preparedStatement1.setBoolean(1,false);
             preparedStatement1.setInt(2,user.getId());
 
             preparedStatement1.executeUpdate();
-            System.out.println("this account by user admin unblocked after time you can use this account\n");
+//            System.out.println("this account by user admin unblocked after time you can use this account\n");
             preparedStatement1.close();
         }
         else System.out.println("this account already unblock !!!\n");
     }
 
-    public void chargeAccount(User user,int balance, Connection connection)throws SQLException{
-        PreparedStatement preparedStatement =connection.prepareStatement("select a.balance , a.id as accountId from user as u  inner join account as a on a.id=? ;");
+    public void chargeAccount(User user,int balance)throws SQLException{
+        PreparedStatement preparedStatement =ApplicationContext.getConnection().prepareStatement("select a.balance , a.id as accountId from user as u  inner join account as a on a.id=? ;");
         preparedStatement.setInt(1,user.getAccount().getId());
 
         ResultSet resultSet =preparedStatement.executeQuery();
@@ -108,7 +110,7 @@ public class AccountRepository  {
 
         myBalance+=balance;
 
-        PreparedStatement preparedStatement1=connection.prepareStatement("update account  set balance =? where id=? ");
+        PreparedStatement preparedStatement1=ApplicationContext.getConnection().prepareStatement("update account  set balance =? where id=? ");
         preparedStatement1.setInt(1,myBalance);
         preparedStatement1.setInt(2,accountId);
         preparedStatement1.executeUpdate();
@@ -120,9 +122,9 @@ public class AccountRepository  {
 
 
     }
-    public boolean checkAccountBlockedUserForLogin(User user, Connection connection) throws SQLException {
+    public boolean checkAccountBlockedUserForLogin(User user) throws SQLException {
 
-        PreparedStatement preparedStatement=connection.prepareStatement("" +
+        PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("" +
                 "select  * from user as u inner join account as a on a.id=? and a.isBlocked=0 ");
 
         preparedStatement.setInt(1,user.getId());

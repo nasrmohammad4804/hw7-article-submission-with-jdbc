@@ -2,7 +2,6 @@ package service;
 
 import domain.Article;
 import domain.User;
-import repository.*;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,50 +10,44 @@ import java.util.List;
 import java.util.Scanner;
 
 public class App {
-    private static Connection connection;
-    private static Scanner scannerForString;
-    private static  Scanner scannerForInteger;
 
-    private static UserRepository userTable;
-    private static CategoryRepository categoryTable;
-    private static ArticleRepository articleRepository;
-    private static TagRepository tagTable;
-    private static TempArticleTagRepository tempArticleTag;
-    private static AccountRepository accountRepository;
+    private static Scanner scannerForString;
+    private static Scanner scannerForInteger;
+
+    private static MyAdmin userAdminServices;
 
     public App() throws SQLException, ClassNotFoundException {
         scannerForString = new Scanner(System.in);
-        scannerForInteger=new Scanner(System.in);
+        scannerForInteger = new Scanner(System.in);
 
-        connection = DriverManager.getConnection("jdbc:mysql://localhost/hw7",
-                "root", "MohammadN@sr13804804");
 
-        //  Class.forName("com.mysql.jdbc.Driver");
-
-        accountRepository = new AccountRepository();
-        userTable = new UserRepository();
-        categoryTable = new CategoryRepository();
-        articleRepository = new ArticleRepository();
-        tagTable = new TagRepository();
-        tempArticleTag = new TempArticleTagRepository();
+        userAdminServices = new MyAdmin();
 
     }
 
     public void start() throws SQLException {
 
+        ApplicationContext app = new ApplicationContext();
 
-        userTable.createTable(connection);
-        accountRepository.createAccount(connection);
-        categoryTable.createTable(connection);
-        articleRepository.createTable(connection);
-        tagTable.createTable(connection);
-        tempArticleTag.createTable(connection);
+        ApplicationContext.getUserRepository().createTable();
 
-        if (userTable.size(connection) == 0)
-            userTable.addDefault(connection);
 
-        if (categoryTable.size(connection) == 0)
-            categoryTable.addDefault(connection);
+        ApplicationContext.getAccountRepository().createAccount();
+        ApplicationContext.getCategoryRepository().createTable();
+        ApplicationContext.getArticleRepository().createTable();
+        ApplicationContext.getTagRepository().createTable();
+        ApplicationContext.getTempArticleTagRepository().createTable();
+        ApplicationContext.getUserAdminRepository().createTable();
+
+
+        if (ApplicationContext.getUserRepository().size() == 0)
+            ApplicationContext.getUserRepository().addDefault();
+
+        if (ApplicationContext.getCategoryRepository().size() == 0)
+            ApplicationContext.getCategoryRepository().addDefault();
+
+        if (ApplicationContext.getUserAdminRepository().size() == 0)
+            ApplicationContext.getUserAdminRepository().addDefaultAdmin();
 
 
         menu();
@@ -62,15 +55,14 @@ public class App {
     }
 
     public void menu() throws SQLException {
-        System.out.println("enter 1 to login ");
+        System.out.println("enter 1 to login ordinary user");
         System.out.println("enter 2 to register");
         System.out.println("enter 3 to show article witch published without register or login");
         System.out.println("enter 4 to show article witch published and free");
         System.out.println("enter 5 to show article witch published and dont free");
-        System.out.println("enter 6 to block account of user");
-        System.out.println("enter 7 to unBlock account of user ... ");
-        System.out.println("enter 8 to charge of account for user !!!");
-        System.out.println("enter 9 to exit the program");
+        System.out.println("enter 6 to login userAdmin ## ");
+        System.out.println("enter 7 to charge of account for user !!!");
+        System.out.println("enter 8 to exit the program");
 
         int number = scannerForInteger.nextInt();
 
@@ -80,47 +72,45 @@ public class App {
             case 2 -> register();
 
             case 3 -> {
-                articleRepository.showAll(connection, null);
+                ApplicationContext.getArticleRepository().showAll();
                 System.out.println("-".repeat(80));
                 menu();
             }
 
             case 4 -> {
-                articleRepository.showAllFreeArticle(connection);
+                ApplicationContext.getArticleRepository().showAllFreeArticle();
                 System.out.println("-".repeat(80));
-                ;
+
                 menu();
             }
 
             case 5 -> {
-                articleRepository.showAllNonFreeArticle(connection);
+                ApplicationContext.getArticleRepository().showAllNonFreeArticle();
                 System.out.println("-".repeat(80));
-                ;
+
                 menu();
             }
 
             case 6 -> {
-                blockOfUser();
-                System.out.println("-".repeat(80));
+
+                loginForUserAdmin();
                 menu();
             }
 
             case 7 -> {
-                unBlockOfUser();
-                System.out.println("-".repeat(80));
-                menu();
-            }
 
-            case 8 -> {
                 chargeAccountOfUser();
                 System.out.println("-".repeat(80));
                 menu();
             }
 
-            case 9 -> {
-                System.out.println("have nice day by ...!!");
+            case 8 -> {
+                System.out.println("have nice day bye ...!!");
                 System.exit(0);
+
             }
+
+
             default -> {
                 System.out.println("your data not valid try again ...");
                 menu();
@@ -131,34 +121,27 @@ public class App {
 
     }
 
+    public void loginForUserAdmin() throws SQLException {
+
+        System.out.println("enter userName  userAdmin .");
+        String userName = scannerForString.nextLine();
+        System.out.println("enter password userAdmin .");
+        String password = scannerForString.nextLine();
+        userAdminServices.loginUserAdmin(userName, password);
+    }
+
     public void chargeAccountOfUser() throws SQLException {
 
         System.out.println("enter your userName ...");
         String userName = scannerForString.nextLine();
-        User user = userTable.checkExistsUser(userName, connection);
-        if (accountRepository.checkAccountBlockedUserForLogin(user,connection)) { // userTable.hasUserWitchUnBlockAccount(user, connection)
+        User user = ApplicationContext.getUserRepository().checkExistsUser(userName);
+        if (ApplicationContext.getAccountRepository().checkAccountBlockedUserForLogin(user)) { // userTable.hasUserWitchUnBlockAccount(user, connection)
             System.out.println("enter how many balance to add your account ...\n");
             int balance = scannerForInteger.nextInt();
-            accountRepository.chargeAccount(user, balance, connection);
+            ApplicationContext.getAccountRepository().chargeAccount(user, balance);
         } else System.out.println("this user not exists or blocked accounted -_-\n");
     }
 
-    public void blockOfUser() throws SQLException {
-        System.out.println("enter userName");
-        String userName = scannerForString.nextLine();
-
-        User user = userTable.checkExistsUser(userName, connection);
-
-        UserAdmin.blockAccount(user, connection);
-    }
-
-    public void unBlockOfUser() throws SQLException {
-        System.out.println("enter userName");
-        String userName = scannerForString.nextLine();
-
-        User user = userTable.checkExistsUser(userName, connection);
-        UserAdmin.unBlockAccount(user, connection);
-    }
 
     public void login() throws SQLException {
         System.out.println("enter username ##");
@@ -166,13 +149,13 @@ public class App {
 
         System.out.println("enter password");
         String password = scannerForString.nextLine();
-        User user = userTable.checkExistsUser(userName, password, connection);
+        User user = ApplicationContext.getUserRepository().checkExistsUser(userName, password);
 
         if (user == null) {
             System.out.println("not exists username with this password .. may be wrong username or password try again ...\n");
             login();
         } else {
-            if (accountRepository.checkAccountBlockedUserForLogin(user,connection)) {  // userTable.hasUserWitchUnBlockAccount(user, connection)
+            if (ApplicationContext.getAccountRepository().checkAccountBlockedUserForLogin(user)) {  // userTable.hasUserWitchUnBlockAccount(user, connection)
                 changingPassword(user);
                 userPanel(user);
             } else {
@@ -194,23 +177,16 @@ public class App {
 
 
         User us = new User(userName, nationalCode, birthday);
-        us =userTable.checkExistsUser(us.getUserName(), connection);
 
-        if (us == null && UserAdmin.confirmToRegisterUser()) {
-            userTable.add(connection, us);
-            us.setId(userTable.size(connection));
-            System.out.println("!! registered new user by username : " + userName + "\n");
-            changingPassword(us);
-            userPanel(us);
-        } else if (us == null && !UserAdmin.confirmToRegisterUser())
-            System.out.println("user admin not allow to register");
+        User temp = ApplicationContext.getUserRepository().checkExistsUser(us.getUserName());
 
-        else {
+
+        if (temp == null) {
+            userAdminServices.loginUserAdmin(us, this);
+        } else {
             System.out.println("this user already exists in database back to menu ");
             menu();
-
         }
-
     }
 
     public void userPanel(User user) throws SQLException {
@@ -223,15 +199,15 @@ public class App {
         switch (scannerForInteger.nextInt()) {
 
             case 1:
-                tempArticleTag.showAll(connection, user);
+                ApplicationContext.getTempArticleTagRepository().showAll(user);
                 userPanel(user);
                 break;
 
             case 2:
                 System.out.println("enter id of article");
                 int id = scannerForInteger.nextInt();
-                if (articleRepository.ExistsArticleId(connection, id, user)) {
-                    articleRepository.changeArticleOfUser(connection, user, id);
+                if (ApplicationContext.getArticleRepository().ExistsArticleId(id, user)) {
+                    ApplicationContext.getArticleRepository().changeArticleOfUser(user, id);
                     userPanel(user);
                 } else {
                     System.out.println("this articleId not exists or not for this user !!!");
@@ -245,11 +221,11 @@ public class App {
                 break;
 
             case 4:
-                start();
+                menu();
         }
     }
 
-    private void changingPassword(User user) throws SQLException {
+    public void changingPassword(User user) throws SQLException {
         System.out.println("if you want changing password  " +
                 "press #1 else press #2");
 
@@ -258,7 +234,7 @@ public class App {
                 System.out.println("enter new password");
 
                 String pass = scannerForString.nextLine();
-                userTable.changePasswordOfUser(connection, user, pass);
+                ApplicationContext.getUserRepository().changePasswordOfUser(user, pass);
             }
 
             case 2 -> userPanel(user);
@@ -299,25 +275,25 @@ public class App {
         article.setPublishDate(null);
 
 
-        connection.setAutoCommit(false);
-        articleRepository.addArticle(connection, article, user, result);
-        article.setId(articleRepository.size(connection));
+        ApplicationContext.getConnection().setAutoCommit(false);
+        ApplicationContext.getArticleRepository().addArticle(article, user, result);
+        article.setId(ApplicationContext.getArticleRepository().size());
 
-        tempArticleTag.add(connection, article, result, tagTable);
-        connection.commit();
+        ApplicationContext.getTempArticleTagRepository().add(article, result, ApplicationContext.getTagRepository());
+        ApplicationContext.getConnection().commit();
 
     }
 
     public int checkCategoryExists() throws SQLException {
 
-        categoryTable.showAll(connection, null);
+        ApplicationContext.getCategoryRepository().showAll();
         System.out.println("enter one category for your article");
         String title = scannerForString.nextLine();
 
         int result = 0;
         List<String> list = new LinkedList<>();
 
-        Statement statement = connection.createStatement();
+        Statement statement = ApplicationContext.getConnection().createStatement();
 
         ResultSet resultSet = statement.executeQuery("select  * from category");
 
@@ -330,8 +306,8 @@ public class App {
 
         if (!list.contains(title)) {
 
-            categoryTable.add(connection, title);
-            categoryTable.showAll(connection, null);
+            ApplicationContext.getCategoryRepository().add(title);
+            ApplicationContext.getCategoryRepository().showAll();
             return list.size() + 1;
 
 
@@ -339,7 +315,7 @@ public class App {
     }
 
     public void closeOfResource() throws SQLException {
-        connection.close();
+        ApplicationContext.getConnection().close();
     }
 }
 
