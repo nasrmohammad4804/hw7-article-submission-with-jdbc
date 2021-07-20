@@ -136,7 +136,7 @@ public class App {
         System.out.println("enter your userName ...");
         String userName = scannerForString.nextLine();
         User user = userTable.checkExistsUser(userName, connection);
-        if (userTable.hasUserWitchUnBlockAccount(user, connection)) {
+        if (accountRepository.checkAccountBlockedUserForLogin(user,connection)) { // userTable.hasUserWitchUnBlockAccount(user, connection)
             System.out.println("enter how many balance to add your account ...\n");
             int balance = scannerForInteger.nextInt();
             accountRepository.chargeAccount(user, balance, connection);
@@ -172,7 +172,7 @@ public class App {
             System.out.println("not exists username with this password .. may be wrong username or password try again ...\n");
             login();
         } else {
-            if (accountRepository.checkAccountBlockedUserForLogin(user, connection)) {
+            if (accountRepository.checkAccountBlockedUserForLogin(user,connection)) {  // userTable.hasUserWitchUnBlockAccount(user, connection)
                 changingPassword(user);
                 userPanel(user);
             } else {
@@ -194,14 +194,15 @@ public class App {
 
 
         User us = new User(userName, nationalCode, birthday);
+        us =userTable.checkExistsUser(us.getUserName(), connection);
 
-        if (userTable.checkExistsUser(us.getUserName(), connection) == null && UserAdmin.confirmToRegisterUser()) {
+        if (us == null && UserAdmin.confirmToRegisterUser()) {
             userTable.add(connection, us);
             us.setId(userTable.size(connection));
             System.out.println("!! registered new user by username : " + userName + "\n");
             changingPassword(us);
             userPanel(us);
-        } else if (userTable.checkExistsUser(us.getUserName(), connection) == null && !UserAdmin.confirmToRegisterUser())
+        } else if (us == null && !UserAdmin.confirmToRegisterUser())
             System.out.println("user admin not allow to register");
 
         else {
