@@ -75,7 +75,8 @@ public class UserRepository implements BaseRepository {
         int counter = 0;
 
         int userId=getIdOfUser(userName,connection);
-        PreparedStatement preparedStatement = connection.prepareStatement("select  u.* , a.id as account_id , a.balance , a.isBlocked from user as u  inner join account as a on a.id=?  "); //TODO
+
+        PreparedStatement preparedStatement = connection.prepareStatement("select  u.* , a.id as account_id , a.balance , a.isBlocked from user as u  inner join account as a on a.id=u.id where a.id=?  "); 
 
         preparedStatement.setInt(1, userId);
 
