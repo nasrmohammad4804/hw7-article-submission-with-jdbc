@@ -1,12 +1,14 @@
 package repository;
 
+import service.ApplicationContext;
+
 import java.sql.*;
 import java.util.Scanner;
 
 public class CategoryRepository implements BaseRepository {
     @Override
-    public final  <T> void showAll(Connection connection, T... value) throws SQLException {
-        Statement statement = connection.createStatement();
+    public final  <T> void showAll( T... value) throws SQLException {
+        Statement statement = ApplicationContext.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery("select  * from category");
 
 
@@ -19,15 +21,15 @@ public class CategoryRepository implements BaseRepository {
 
 
     @Override
-    public void createTable(Connection connection) throws SQLException {
-        Statement statement = connection.createStatement();
+    public void createTable() throws SQLException {
+        Statement statement = ApplicationContext.getConnection().createStatement();
         statement.executeUpdate("create table if not exists category(id int primary  key auto_increment  , title varchar (50) not null unique , " +
                 "description varchar (50) )");
     }
 
     @Override
-    public int size(Connection connection) throws SQLException {
-        Statement statement=connection.createStatement();
+    public int size() throws SQLException {
+        Statement statement=ApplicationContext.getConnection().createStatement();
         int counter=0;
         ResultSet resultSet =statement.executeQuery("select * from category");
 
@@ -38,8 +40,8 @@ public class CategoryRepository implements BaseRepository {
     }
 
     @Override
-    public void addDefault(Connection connection) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into category(title, description)" +
+    public void addDefault() throws SQLException {
+        PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("insert into category(title, description)" +
                 "values (?,?) ,(?,?)");
 
         preparedStatement.setString(1, "scientific");
@@ -54,7 +56,7 @@ public class CategoryRepository implements BaseRepository {
     }
 
     @Override
-    public <T> void add(Connection connection, T... str) throws SQLException {
+    public <T> void add( T... str) throws SQLException {
         String title=(String) str[0];
         Scanner scanner = new Scanner(System.in);
 
@@ -62,7 +64,7 @@ public class CategoryRepository implements BaseRepository {
         System.out.println("enter description of category");
         String description = scanner.nextLine();
 
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into category(title,description) value (?,?)");
+        PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("insert into category(title,description) value (?,?)");
 
         preparedStatement.setString(1, title);
         preparedStatement.setString(2, description);
