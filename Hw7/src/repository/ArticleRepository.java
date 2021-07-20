@@ -6,7 +6,7 @@ import domain.User;
 import mapper.ArticleMapper;
 
 import java.sql.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class ArticleRepository implements BaseRepository {
@@ -75,8 +75,8 @@ public class ArticleRepository implements BaseRepository {
         statement.executeUpdate("create table if not exists article " +
                 "(id int primary key auto_increment , title varchar(50) not null ," +
                 "brief varchar (50) not null , content text   , " +
-                "createDate date , isPublished tinyint(1)  , state_money varchar(20) , " +
-                "lastUpdateDate date , publishDate date , " +
+                "createDate timestamp , isPublished tinyint(1)  , state_money varchar(20) , " +
+                "lastUpdateDate timestamp  , publishDate timestamp , " +
                 "user_id int , category_id int , " +
                 "foreign key  (user_id) references user(id) , " +
                 "foreign key (category_id) references category(id))");
@@ -113,7 +113,7 @@ public class ArticleRepository implements BaseRepository {
                 String title = sc.nextLine();
                 preparedStatement = connection.prepareStatement("update article as a set a.title=?, lastUpdateDate=? where a.id=? and a.user_id=?");
                 preparedStatement.setString(1, title);
-                preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
 
@@ -128,7 +128,7 @@ public class ArticleRepository implements BaseRepository {
                 String brief = sc.nextLine();
                 preparedStatement = connection.prepareStatement("update article as a set a.brief=? , lastUpdateDate=? where a.id=? and a.user_id=?");
                 preparedStatement.setString(1, brief);
-                preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
+                preparedStatement.setTimestamp(2,Timestamp.valueOf(LocalDateTime.now()) );
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
 
@@ -143,7 +143,7 @@ public class ArticleRepository implements BaseRepository {
                 String content = sc.nextLine();
                 preparedStatement = connection.prepareStatement("update article as a set a.content=? ,lastUpdateDate=? where a.id=?  and a.user_id=?");
                 preparedStatement.setString(1, content);
-                preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
 
@@ -174,7 +174,7 @@ public class ArticleRepository implements BaseRepository {
                 } else {
                     preparedStatement = connection.prepareStatement("update article as a set isPublished=?  , publishDate=? where a.id=? and a.user_id=?");
                     preparedStatement.setBoolean(1, true);
-                    preparedStatement.setDate(2, Date.valueOf(LocalDate.now()));
+                    preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
                     preparedStatement.setInt(3, idOfArticle);
                     preparedStatement.setInt(4, user.getId());
 
