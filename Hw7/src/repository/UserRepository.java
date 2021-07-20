@@ -182,23 +182,7 @@ public class UserRepository implements BaseRepository {
         preparedStatement.close();
         System.out.println("default user added ....\n");
     }
-    public boolean hasUserWitchUnBlockAccount(User user , Connection connection) throws SQLException {
-        PreparedStatement preparedStatement=connection.prepareStatement("select  * from user as u inner join account as a " +
-                " on a.id=? and a.isBlocked=0");
 
-
-        preparedStatement.setInt(1,user.getAccount().getId());
-
-
-        ResultSet resultSet =preparedStatement.executeQuery();
-        int counter=0;
-
-        while (resultSet.next())
-            counter++;
-
-         return counter==0 ? false : true;
-
-    }
 }
 
 
