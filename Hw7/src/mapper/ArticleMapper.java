@@ -17,6 +17,7 @@ public class ArticleMapper {
         article.setPublished(resultSet.getBoolean("isPublished"));
         article.setLastUpdate(resultSet.getTimestamp("lastUpdateDate"));
         article.setPublishDate(resultSet.getTimestamp("publishDate"));
+        article.setStateOfMoney("state_money");
 
         return article;
     }
