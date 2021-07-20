@@ -125,7 +125,7 @@ public class AccountRepository  {
         PreparedStatement preparedStatement=connection.prepareStatement("" +
                 "select  * from user as u inner join account as a on a.id=? and a.isBlocked=0 ");
 
-        preparedStatement.setInt(1,user.getAccount().getId());
+        preparedStatement.setInt(1,user.getId());
 
         int counter=0;
         ResultSet resultSet =preparedStatement.executeQuery();
