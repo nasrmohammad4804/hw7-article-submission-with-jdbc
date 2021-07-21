@@ -4,9 +4,7 @@ import domain.User;
 import domain.UserAdmin;
 import repository.AccountRepository;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Scanner;
 
 public class MyAdmin {
@@ -22,7 +20,7 @@ public class MyAdmin {
         String password = scannerForString.nextLine();
         for (UserAdmin admin : ApplicationContext.getUserAdminRepository().findAll()) {
             if (admin.getUserName().equals(userName))
-                if (admin.getPassWord().equals(password)) {
+                if (admin.getPassword().equals(password)) {
                     confirmToRegisterUser(user, admin, app);
                     return;
                 }
@@ -36,7 +34,7 @@ public class MyAdmin {
     public void loginUserAdmin(String userName, String password) throws SQLException {
         for (UserAdmin admin : ApplicationContext.getUserAdminRepository().findAll()) {
             if (admin.getUserName().equals(userName))
-                if (admin.getPassWord().equals(password)) {
+                if (admin.getPassword().equals(password)) {
                     userAdminPanel(admin);
                     return;
                 }
@@ -46,12 +44,12 @@ public class MyAdmin {
         System.out.println("this admin this this data not exists try again ...");
     }
 
-    public void blockAccount(User user) throws SQLException {
-        AccountRepository.blockAccount(user);
+    public void blockAccount(User user,UserAdmin admin) throws SQLException {
+        AccountRepository.blockAccount(user,admin);
     }
 
-    public void unBlockAccount(User user, Connection connection) throws SQLException {
-        AccountRepository.unBlockAccount(user);
+    public void unBlockAccount(User user,UserAdmin admin) throws SQLException {
+        AccountRepository.unBlockAccount(user,admin);
     }
 
     public void confirmToRegisterUser(User user, UserAdmin admin, App app) throws SQLException {
@@ -98,8 +96,8 @@ public class MyAdmin {
 
                 User user = ApplicationContext.getUserRepository().checkExistsUser(userName);
 
-                blockAccount(user);
-                System.out.println("this account blocked by userAdmin : " + admin.getName() + "   " + admin.getFamily() + "   " + admin.getAge());
+                blockAccount(user,admin);
+//                System.out.println("this account blocked by userAdmin : " + admin.getName() + "   " + admin.getFamily() + "   " + admin.getAge());
                 userAdminPanel(admin);
             }
             case 3 -> {
@@ -107,8 +105,8 @@ public class MyAdmin {
                 String userName = scannerForString.nextLine();
 
                 User user = ApplicationContext.getUserRepository().checkExistsUser(userName);
-                unBlockAccount(user, ApplicationContext.getConnection());
-                System.out.println("this account  unblocked  by user admin : " + admin.getName() + "   " + admin.getFamily() + "   " + admin.getAge());
+                unBlockAccount(user,admin);
+//                System.out.println("this account  unblocked  by user admin : " + admin.getName() + "   " + admin.getFamily() + "   " + admin.getAge());
                 userAdminPanel(admin);
             }
             case 4 -> System.out.println("operation in userPanelAdmin is finished back to home ...\n");
@@ -155,7 +153,7 @@ public class MyAdmin {
 
         for (UserAdmin ad : ApplicationContext.getUserAdminRepository().findAll()) {
             if (ad.getUserName().equals(userAdminName))
-                if (ad.getPassWord().equals(userAdminPassword)) {
+                if (ad.getPassword().equals(userAdminPassword)) {
                     confirmToRegisterUserAdmin(ad, admin);
                     return;
                 }

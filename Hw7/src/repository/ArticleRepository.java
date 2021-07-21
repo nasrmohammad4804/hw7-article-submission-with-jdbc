@@ -9,29 +9,51 @@ import service.ApplicationContext;
 import java.nio.file.attribute.UserPrincipalLookupService;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ArticleRepository implements BaseRepository {
-    private Scanner scannerForString=new Scanner(System.in);
-    private Scanner scannerForInteger=new Scanner(System.in);
+    private Scanner scannerForString = new Scanner(System.in);
+    private Scanner scannerForInteger = new Scanner(System.in);
+
     @Override
-    public final <T> void showAll( T... value) throws SQLException {
+    public final <T> void showAll(T... value) throws SQLException {
+
         Statement statement = ApplicationContext.getConnection().createStatement();
 
-        ResultSet resultSet = statement.executeQuery("select * from article where isPublished=1 ");
-
+        ResultSet resultSet = statement.executeQuery("select id, title, brief  from article where isPublished=1 ;");
+        List<Integer> list = new ArrayList<>();
         while (resultSet.next()) {
-
-            domain.Article article = ArticleMapper.mapToArticleObject(resultSet);
-            article.setCategory(new Category(resultSet.getInt("category_id"),
-                    CategoryRepository.getTitleOfCategory(resultSet.getInt("category_id"),
-                            ApplicationContext.getConnection().createStatement())));
-
-
-
-            article.print();
-            System.out.println("*".repeat(80));
+            System.out.println("id : " + resultSet.getInt("id") + "   title : " + resultSet.getString("title") + "   brief : " +
+                    resultSet.getString("brief"));
+            list.add(resultSet.getInt("id"));
         }
+        System.out.println("enter number want you article id");
+        int number = scannerForInteger.nextInt();
+
+        if (!list.contains(number)) {
+            System.out.println("sorry this article not exists ...");
+
+        } else {
+
+            PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("select * from article where isPublished=1 and id=?");
+            preparedStatement.setInt(1, number);
+            ResultSet result = preparedStatement.executeQuery();
+
+            while (result.next()) {
+
+                domain.Article article = ArticleMapper.mapToArticleObject(result);
+                article.setCategory(new Category(result.getInt("category_id"),
+                        CategoryRepository.getTitleOfCategory(result.getInt("category_id"),
+                                ApplicationContext.getConnection().createStatement())));
+
+
+                article.print();
+                System.out.println("*".repeat(80));
+            }
+        }
+
     }
 
 
@@ -98,7 +120,7 @@ public class ArticleRepository implements BaseRepository {
         return number;
     }
 
-    public void changeArticleOfUser( User user, int idOfArticle) throws SQLException {
+    public void changeArticleOfUser(User user, int idOfArticle) throws SQLException {
 
         Scanner sc = new Scanner(System.in);
         // showArticleOfUser(connection, userDomain);
@@ -111,7 +133,7 @@ public class ArticleRepository implements BaseRepository {
 
         switch (result) {
 
-            case 1 :
+            case 1:
 
                 System.out.println("enter new title");
                 String title = scannerForString.nextLine();
@@ -132,7 +154,7 @@ public class ArticleRepository implements BaseRepository {
                 String brief = scannerForString.nextLine();
                 preparedStatement = ApplicationContext.getConnection().prepareStatement("update article as a set a.brief=? , lastUpdateDate=? where a.id=? and a.user_id=?");
                 preparedStatement.setString(1, brief);
-                preparedStatement.setTimestamp(2,Timestamp.valueOf(LocalDateTime.now()) );
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
                 preparedStatement.setInt(3, idOfArticle);
                 preparedStatement.setInt(4, user.getId());
 
@@ -184,53 +206,53 @@ public class ArticleRepository implements BaseRepository {
 
                     preparedStatement.executeUpdate();
 
-                    specifyTheStatusArticle( idOfArticle, user);
+                    specifyTheStatusArticle(idOfArticle, user);
                     System.out.println("filed of isPublished changed to true  ...\n");
 
                 }
                 break;
-            case 5 :
-                PreparedStatement preparedStatement1=ApplicationContext.getConnection().prepareStatement("select * from article as a where a.id=? and a.user_id=? and a.isPublished=? ;");
+            case 5:
+                PreparedStatement preparedStatement1 = ApplicationContext.getConnection().prepareStatement("select * from article as a where a.id=? and a.user_id=? and a.isPublished=? ;");
 
-                int counter=0;
-                preparedStatement1.setInt(1,idOfArticle);
-                preparedStatement1.setInt(2,user.getId());
-                preparedStatement1.setBoolean(3,true);
+                int counter = 0;
+                preparedStatement1.setInt(1, idOfArticle);
+                preparedStatement1.setInt(2, user.getId());
+                preparedStatement1.setBoolean(3, true);
                 ResultSet resultSet1 = preparedStatement1.executeQuery();
-                String str="";
-                while (resultSet1.next()){
+                String str = "";
+                while (resultSet1.next()) {
                     counter++;
-                    str=resultSet1.getString("state_money");
+                    str = resultSet1.getString("state_money");
                 }
 
 
-                if(counter>0){
-                    Scanner scanner=new Scanner(System.in);
-                    switch (str){
-                        case "free" ->{
+                if (counter > 0) {
+                    Scanner scanner = new Scanner(System.in);
+                    switch (str) {
+                        case "free" -> {
                             System.out.println("this article state is free are you want to nonFree enter nonFree");
-                            String test=scanner.nextLine();
-                            if(!test.equals("nonFree"))
-                                changeArticleOfUser(user,idOfArticle);
+                            String test = scanner.nextLine();
+                            if (!test.equals("nonFree"))
+                                changeArticleOfUser(user, idOfArticle);
 
-                            PreparedStatement preparedStatement2=ApplicationContext.getConnection().prepareStatement("update article set state_money=? where id=? and user_id=?");
-                            preparedStatement2.setString(1,"nonFree");
-                            preparedStatement2.setInt(2,idOfArticle);
-                            preparedStatement2.setInt(3,user.getId());
+                            PreparedStatement preparedStatement2 = ApplicationContext.getConnection().prepareStatement("update article set state_money=? where id=? and user_id=?");
+                            preparedStatement2.setString(1, "nonFree");
+                            preparedStatement2.setInt(2, idOfArticle);
+                            preparedStatement2.setInt(3, user.getId());
                             preparedStatement2.executeUpdate();
                             preparedStatement2.close();
                             System.out.println("state_money changed of free to nonFree");
                         }
-                        case "nonFree" ->{
+                        case "nonFree" -> {
                             System.out.println("this article state is nonFree are you want to free enter free");
-                            String test=scanner.nextLine();
-                            if(!test.equals("free"))
-                                changeArticleOfUser(user,idOfArticle);
+                            String test = scanner.nextLine();
+                            if (!test.equals("free"))
+                                changeArticleOfUser(user, idOfArticle);
 
-                            PreparedStatement preparedStatement3=ApplicationContext.getConnection().prepareStatement("update article as a set a.state_money=? where a.id=? and a.user_id=?");
-                            preparedStatement3.setString(1,"free");
-                            preparedStatement3.setInt(2,idOfArticle);
-                            preparedStatement3.setInt(3,user.getId());
+                            PreparedStatement preparedStatement3 = ApplicationContext.getConnection().prepareStatement("update article as a set a.state_money=? where a.id=? and a.user_id=?");
+                            preparedStatement3.setString(1, "free");
+                            preparedStatement3.setInt(2, idOfArticle);
+                            preparedStatement3.setInt(3, user.getId());
                             preparedStatement3.executeUpdate();
                             preparedStatement3.close();
                             System.out.println("state_money changed of nonFree to free");
@@ -243,7 +265,7 @@ public class ArticleRepository implements BaseRepository {
 
     }
 
-    private void specifyTheStatusArticle( int articleId, User user) throws SQLException {
+    private void specifyTheStatusArticle(int articleId, User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("are you want article is free or noneFree if free enter free else enter noneFree ... ");
 
@@ -270,7 +292,7 @@ public class ArticleRepository implements BaseRepository {
         }
     }
 
-    public boolean ExistsArticleId( int id, User user) throws SQLException {
+    public boolean ExistsArticleId(int id, User user) throws SQLException {
 
         PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("select * from article as a where a.id=? and a.user_id=? ");
         int counter = 0;
@@ -290,7 +312,7 @@ public class ArticleRepository implements BaseRepository {
 
     }
 
-    public void addArticle( domain.Article article, User user, int categoryId) throws SQLException {
+    public void addArticle(domain.Article article, User user, int categoryId) throws SQLException {
         PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("insert into article(title,brief,content, createDate,isPublished" +
                 ",lastUpdateDate,publishDate,user_id,category_id,state_money) values  (?,?,?,?,?,?,?,?,?,?)");
 

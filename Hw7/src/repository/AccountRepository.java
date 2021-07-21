@@ -2,6 +2,7 @@ package repository;
 
 import domain.Account;
 import domain.User;
+import domain.UserAdmin;
 import service.ApplicationContext;
 
 import java.sql.*;
@@ -40,7 +41,7 @@ public class AccountRepository  {
     }
 
 
-    public static void blockAccount(User user) throws SQLException {
+    public static void blockAccount(User user, UserAdmin admin) throws SQLException {
         boolean bool=true;
         PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("select  u.* , a.isBlocked as block from user as u inner join account as a on a.id=u.id where u.id=?");
         preparedStatement.setInt(1,user.getId());
@@ -63,14 +64,14 @@ public class AccountRepository  {
             preparedStatement1.setInt(2,user.getId());
 
             preparedStatement1.executeUpdate();
-//            System.out.println("this account by userAdmin blocked ..\n\n");
+            System.out.println("this account blocked by userAdmin : " + admin.getName() + "   " + admin.getFamily() + "   " + admin.getAge());
             preparedStatement1.close();
         }
         else System.out.println("this account already blocked !!! \n");
 
 
     }
-    public static void unBlockAccount(User user) throws SQLException {
+    public static void unBlockAccount(User user,UserAdmin admin) throws SQLException {
         boolean bool=false;
         PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("select  u.* , a.isBlocked as myblock from user as u inner join account as a on a.id=u.id where u.id=?");
         preparedStatement.setInt(1,user.getId());
@@ -93,7 +94,7 @@ public class AccountRepository  {
             preparedStatement1.setInt(2,user.getId());
 
             preparedStatement1.executeUpdate();
-//            System.out.println("this account by user admin unblocked after time you can use this account\n");
+            System.out.println("this account  unblocked  by user admin : " + admin.getName() + "   " + admin.getFamily() + "   " + admin.getAge());
             preparedStatement1.close();
         }
         else System.out.println("this account already unblock !!!\n");

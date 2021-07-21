@@ -21,6 +21,7 @@ public class UserRepository implements BaseRepository {
 
        while (resultSet.next()){
            User user =UserMapper.mapTOUserObject(resultSet);
+           user.setAccount(AccountMapper.mapToAccountObject(resultSet));
            System.out.println(user);
        }
     }

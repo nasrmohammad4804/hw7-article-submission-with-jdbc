@@ -24,7 +24,7 @@ public class UserAdminRepository implements BaseRepository{
         preparedStatement.setString(2,admin.getFamily());
         preparedStatement.setInt(3,admin.getAge());
         preparedStatement.setString(4,admin.getUserName());
-        preparedStatement.setString(5,admin.getPassWord());
+        preparedStatement.setString(5,admin.getPassword());
         preparedStatement.executeUpdate();
         System.out.printf("this userAdmin %s added to list of userAdmin ...\n\n",admin.getUserName());
         preparedStatement.close();
