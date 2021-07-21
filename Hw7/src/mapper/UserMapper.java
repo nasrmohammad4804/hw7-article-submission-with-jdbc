@@ -13,8 +13,7 @@ public class UserMapper {
                 resultSet.getString("username"), resultSet.getString("nationalcode"),
                 resultSet.getDate("birthday"), resultSet.getString("password"));
 
-        user.setAccount(new Account( resultSet.getInt("account_id"),resultSet.getInt("balance"),
-                resultSet.getBoolean("isBlocked")));
+
 
         return user;
     }

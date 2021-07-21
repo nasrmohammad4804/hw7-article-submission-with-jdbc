@@ -15,6 +15,23 @@ public class UserAdminRepository implements BaseRepository{
     }
 
     @Override
+    public <T> void add(T... str) throws SQLException {
+        UserAdmin admin=(UserAdmin) str[0];
+
+        PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("insert into user_admin(name,family,age,user_name , password) values " +
+                "(?,?,?,?,?)");
+        preparedStatement.setString(1,admin.getName());
+        preparedStatement.setString(2,admin.getFamily());
+        preparedStatement.setInt(3,admin.getAge());
+        preparedStatement.setString(4,admin.getUserName());
+        preparedStatement.setString(5,admin.getPassWord());
+        preparedStatement.executeUpdate();
+        System.out.printf("this userAdmin %s added to list of userAdmin ...\n\n",admin.getUserName());
+        preparedStatement.close();
+
+    }
+
+    @Override
     public void createTable() throws SQLException {
         Statement statement=ApplicationContext.getConnection().createStatement();
         statement.executeUpdate("create table if not exists user_admin(name varchar (50) not null , " +

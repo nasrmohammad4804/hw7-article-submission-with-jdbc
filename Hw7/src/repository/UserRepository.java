@@ -70,8 +70,8 @@ public class UserRepository implements BaseRepository {
         preparedStatement.close();
     }
 
-    private int getIdOfUser(String userName,Connection connection) throws SQLException {
-        PreparedStatement preparedStatement =connection.prepareStatement("select id from user where username=?");
+    private int getIdOfUser(String userName) throws SQLException {
+        PreparedStatement preparedStatement =ApplicationContext.getConnection().prepareStatement("select id from user where username=?");
         preparedStatement.setString(1,userName);
         ResultSet resultSet = preparedStatement.executeQuery();
         int counter=0;
@@ -83,7 +83,7 @@ public class UserRepository implements BaseRepository {
     private User checkForRegister(String userName) throws SQLException {
         int counter = 0;
 
-        int userId=getIdOfUser(userName,ApplicationContext.getConnection());
+        int userId=getIdOfUser(userName);
         if(userId==0)
             return null;
 
