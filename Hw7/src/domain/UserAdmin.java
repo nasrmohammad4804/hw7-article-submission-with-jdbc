@@ -14,6 +14,15 @@ public class UserAdmin {
         this.passWord=passWord;
     }
 
+    public UserAdmin(String name, String family, int age,  String userName, String passWord) {
+        this.name = name;
+        this.family = family;
+        this.age = age;
+
+        this.userName = userName;
+        this.passWord = passWord;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
