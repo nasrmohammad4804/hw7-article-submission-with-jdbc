@@ -57,7 +57,11 @@ public class CategoryRepository implements BaseRepository {
 
     @Override
     public <T> void add( T... str) throws SQLException {
-        String title=(String) str[0];
+
+        String title="";
+        if( str[0] instanceof String){
+            title=(String) str[0];
+        }
         Scanner scanner = new Scanner(System.in);
 
 

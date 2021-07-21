@@ -74,9 +74,18 @@ public class TempArticleTagRepository implements BaseRepository {
 
     @Override
     public <T> void add( T... str) throws SQLException {
-        Article article = (Article) str[0];
-        int category_id = (int) str[1];
-        TagRepository tagTable = (TagRepository) str[2];
+
+        Article article = null;
+        if( str[0] instanceof Article )
+            article=(Article) str[0];
+
+        int category_id =0;
+        if( str[1] instanceof Integer)
+            category_id=(int) str[1];
+
+        TagRepository tagTable =null;
+        if( str[2] instanceof TagRepository)
+            tagTable=(TagRepository)str[2];
 
         System.out.println("enter number you want tag ...  ");
 

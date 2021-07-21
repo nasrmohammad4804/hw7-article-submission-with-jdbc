@@ -51,7 +51,11 @@ public class UserRepository implements BaseRepository {
 
     @Override
     public <T> void add( T... str) throws SQLException {
-        User user=(User) str[0];
+
+        User user=null;
+        if(str[0] instanceof User)
+            user=(User) str[0];
+
         PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("insert into user(username, nationalcode , birthday, password) values (?,?,?,?)");
 
         ApplicationContext.getConnection().setAutoCommit(false);

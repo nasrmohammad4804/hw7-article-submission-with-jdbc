@@ -57,7 +57,10 @@ public class TagRepository implements BaseRepository{
 
     @Override
     public <T> void add( T... str) throws SQLException {
-        String tag=(String) str[0];
+        String tag="";
+        if(str[0] instanceof String)
+           tag= (String) str[0];
+
         PreparedStatement preparedStatement = ApplicationContext.getConnection().prepareStatement("insert into tag(title) value (?)");
 
         preparedStatement.setString(1, tag);

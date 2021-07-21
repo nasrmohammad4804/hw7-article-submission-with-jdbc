@@ -16,7 +16,9 @@ public class UserAdminRepository implements BaseRepository{
 
     @Override
     public <T> void add(T... str) throws SQLException {
-        UserAdmin admin=(UserAdmin) str[0];
+        UserAdmin admin=null ;
+        if( str[0] instanceof UserAdmin)
+            admin=(UserAdmin) str[0];
 
         PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("insert into user_admin(name,family,age,user_name , password) values " +
                 "(?,?,?,?,?)");
