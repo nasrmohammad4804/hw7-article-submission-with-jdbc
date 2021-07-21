@@ -125,7 +125,7 @@ public class AccountRepository  {
     public boolean checkAccountBlockedUserForLogin(User user) throws SQLException {
 
         PreparedStatement preparedStatement=ApplicationContext.getConnection().prepareStatement("" +
-                "select  * from user as u inner join account as a on a.id=? and a.isBlocked=0 ");
+                "select  * from user as u inner join account as a on a.id=u.id where a.id=? and a.isBlocked=0 ");
 
         preparedStatement.setInt(1,user.getId());
 

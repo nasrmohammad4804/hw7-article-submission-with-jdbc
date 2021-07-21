@@ -2,6 +2,7 @@ package service;
 
 import domain.Article;
 import domain.User;
+import domain.UserAdmin;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -61,8 +62,9 @@ public class App {
         System.out.println("enter 4 to show article witch published and free");
         System.out.println("enter 5 to show article witch published and dont free");
         System.out.println("enter 6 to login userAdmin ## ");
-        System.out.println("enter 7 to charge of account for user !!!");
-        System.out.println("enter 8 to exit the program");
+        System.out.println("enter 7 to register userAdmin ## ");
+        System.out.println("enter 8 to charge of account for user !!!");
+        System.out.println("enter 9 to exit the program");
 
         int number = scannerForInteger.nextInt();
 
@@ -98,34 +100,48 @@ public class App {
             }
 
             case 7 -> {
-
-                chargeAccountOfUser();
-                System.out.println("-".repeat(80));
+                registerNewUserAdmin();
                 menu();
             }
 
             case 8 -> {
+                chargeAccountOfUser();
+                System.out.println("-".repeat(80));
+                menu();
+            }
+            case 9 -> {
                 System.out.println("have nice day bye ...!!");
                 System.exit(0);
-
             }
-
 
             default -> {
                 System.out.println("your data not valid try again ...");
                 menu();
             }
 
-
         }
 
+    }
+    public void registerNewUserAdmin() throws SQLException {
+        System.out.println("enter name for userAdmin ..");
+        String name=scannerForString.nextLine();
+        System.out.println("enter family for userAdmin ...");
+        String family=scannerForString.nextLine();
+        System.out.println("enter age for userAdmin ..");
+        int age=scannerForInteger.nextInt();
+        System.out.println("enter userName for userAdmin");
+        String userName=scannerForString.nextLine();
+        System.out.println("enter password for userAdmin");
+        String password=scannerForString.nextLine();
+        UserAdmin admin=new UserAdmin(name,family,age,userName,password);
+        userAdminServices.registerUserAdmin(admin);
     }
 
     public void loginForUserAdmin() throws SQLException {
 
-        System.out.println("enter userName  userAdmin .");
+        System.out.println("enter userName  userAdmin who must login  .");
         String userName = scannerForString.nextLine();
-        System.out.println("enter password userAdmin .");
+        System.out.println("enter password userAdmin  who must login .");
         String password = scannerForString.nextLine();
         userAdminServices.loginUserAdmin(userName, password);
     }
@@ -182,7 +198,7 @@ public class App {
 
 
         if (temp == null) {
-            userAdminServices.loginUserAdmin(us, this);
+            userAdminServices.loginUserAdminForRegisterUser(us, this);
         } else {
             System.out.println("this user already exists in database back to menu ");
             menu();
